@@ -97,7 +97,7 @@
       font-weight: 700;
     }
 
-    /* Panel 1: Lottery Machine */
+    /* Panel 1: SmartDraw */
     .machine-box {
       flex: 1;
       background: #050a07;
@@ -496,10 +496,10 @@
   </header>
 
   <main class="grid-2x2">
-    <!-- TOP-LEFT: 1. Lottery Machine -->
+    <!-- TOP-LEFT: 1. SmartDraw -->
     <section class="panel panel-top">
       <div class="panel-header">
-        <span>1. Lottery Machine</span>
+        <span>1. SmartDraw</span>
       </div>
       <div class="machine-box">
         <div class="rolling-text" id="rollingDisplay">READY</div>
@@ -705,4 +705,63 @@
 
       function showToast(msg, borderColor) {
         toastBanner.textContent = msg;
-        toastBanner.style.borderColor = borderColor || '#1
+        toastBanner.style.borderColor = borderColor || '#16a34a';
+        toastBanner.style.display = 'flex';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() {
+          toastBanner.style.display = 'none';
+        }, 2800);
+      }
+
+      function openConfirmModal(title, desc, yesText, onConfirm) {
+        confirmTitle.textContent = title;
+        confirmDesc.textContent = desc;
+        confirmYesBtn.textContent = yesText;
+        pendingConfirmAction = onConfirm;
+        confirmModal.style.display = 'flex';
+      }
+
+      confirmYesBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+        if (typeof pendingConfirmAction === 'function') {
+          pendingConfirmAction();
+          pendingConfirmAction = null;
+        }
+      });
+
+      confirmNoBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+        pendingConfirmAction = null;
+      });
+
+      function parseCandidate(rawStr) {
+        const cleaned = normalizeLineSpaces(rawStr);
+        let idx = 0;
+        const len = cleaned.length;
+
+        let formDigits = '';
+        while (idx < len && isDigitChar(cleaned[idx])) {
+          formDigits += cleaned[idx];
+          idx++;
+        }
+
+        let classLetters = '';
+        while (idx < len && isLetterChar(cleaned[idx])) {
+          classLetters += cleaned[idx];
+          idx++;
+        }
+
+        if (formDigits.length > 0 && classLetters.length > 0) {
+          while (idx < len && (cleaned[idx] === ' ' || cleaned[idx] === '-' || cleaned[idx] === '–')) {
+            idx++;
+          }
+          let noDigits = '';
+          while (idx < len && isDigitChar(cleaned[idx])) {
+            noDigits += cleaned[idx];
+            idx++;
+          }
+          if (noDigits.length > 0 && (idx === len || cleaned[idx] === ' ')) {
+            const restName = cleaned.slice(idx).trim();
+            return {
+              className: (formDigits + classLetters).toUpperCase(),
+              classNo: noDigits
