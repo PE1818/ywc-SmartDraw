@@ -1169,21 +1169,31 @@
 
       function getSortedResults() {
         let sorted = results.slice();
-        if (currentSort === 'order') {
-          sorted.sort(function(a, b) {
+        sorted.sort(function(a, b) {
+          // 1. Always place selected winners (#1, #2...) before reserve list (Reserve #1, Reserve #2...)
+          const groupA = a.type === 'winner' ? 0 : 1;
+          const groupB = b.type === 'winner' ? 0 : 1;
+          if (groupA !== groupB) {
+            return groupA - groupB;
+          }
+
+          // 2. For reserve list, always keep reserve priority order (Reserve #1, Reserve #2...) regardless of selected sort mode
+          if (a.type === 'reserve' && b.type === 'reserve') {
+            return a.typeOrder - b.typeOrder;
+          }
+
+          // 3. For selected winners, sort by the chosen mode
+          if (currentSort === 'order') {
             return a.order - b.order;
-          });
-        } else if (currentSort === 'class') {
-          sorted.sort(function(a, b) {
+          } else if (currentSort === 'class') {
             const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
             if (classCmp !== 0) return classCmp;
             return a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
-          });
-        } else if (currentSort === 'name') {
-          sorted.sort(function(a, b) {
+          } else if (currentSort === 'name') {
             return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-          });
-        }
+          }
+          return 0;
+        });
         return sorted;
       }
 
