@@ -23,6 +23,7 @@
       padding-bottom: 1rem;
       border-bottom: 1px solid #143322;
       user-select: none;
+      -webkit-user-select: none;
     }
     .header-title {
       font-size: 2rem;
@@ -40,10 +41,13 @@
       text-transform: uppercase;
       letter-spacing: 2px;
       margin-top: 0.25rem;
+      padding: 0.35rem 1rem;
       display: inline-block;
       font-weight: 800;
       cursor: default;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
     /* Unified Symmetrical 2x2 Grid Layout */
@@ -139,6 +143,8 @@
       cursor: pointer;
       transition: all 0.2s;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
       font-family: inherit;
     }
     .btn:disabled {
@@ -549,219 +555,3 @@
       <div class="panel-header">
         <span>4. Selection Results</span>
         <span class="badge" id="drawnCount">0</span>
-      </div>
-      <div class="sort-controls">
-        <button class="sort-btn active" data-sort="order">Draw Order</button>
-        <button class="sort-btn" data-sort="class">Class / No.</button>
-        <button class="sort-btn" data-sort="name">Name (A-Z)</button>
-      </div>
-      <div class="table-wrapper" id="tableWrapper">
-        <table id="sortedTable">
-          <thead>
-            <tr>
-              <th style="width: 115px;">Status</th>
-              <th style="width: 80px;">Class</th>
-              <th style="width: 65px;">No.</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody id="sortedTableBody"></tbody>
-        </table>
-      </div>
-      <div class="table-actions">
-        <button class="btn btn-draw" id="copyExcelBtn" style="flex: 2; font-size: 0.98rem;">Table for Excel</button>
-        <button class="btn btn-secondary" id="copyBtn" style="flex: 1;">Text List</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Hidden Admin Settings Modal (Guaranteed vs Excluded) -->
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal-box">
-      <div class="modal-title">Admin Allocation Settings</div>
-      <div class="modal-desc">
-        Configure guaranteed or excluded candidates below (one per line, header rows are auto-ignored).<br>
-        <span style="color: #fca5a5;">* <strong>Excluded</strong> entries are blocked from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
-      </div>
-
-      <div class="admin-grid">
-        <!-- LEFT: Guaranteed (GREEN) -->
-        <div class="admin-card-win">
-          <div class="admin-card-header">
-            <span class="tag-win">✓ GUARANTEED</span>
-            <span id="priorityBadge" style="font-size:0.8rem; color:#86efac; font-weight:600;">0 entries</span>
-          </div>
-          <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
-        </div>
-
-        <!-- RIGHT: Excluded (RED) -->
-        <div class="admin-card-lose">
-          <div class="admin-card-header">
-            <span class="tag-lose">✕ EXCLUDED</span>
-            <span id="excludedBadge" style="font-size:0.8rem; color:#fca5a5; font-weight:600;">0 entries</span>
-          </div>
-          <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
-        <button class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Custom Confirmation Modal -->
-  <div class="modal-overlay" id="confirmModal">
-    <div class="modal-box" style="max-width: 390px;">
-      <div class="modal-title" id="confirmTitle" style="color: #dc2626;">Reset Drawn Results?</div>
-      <div class="modal-desc" id="confirmDesc">
-        This will clear all drawn selected entries and reserves from the results table.
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-reset" id="confirmYesBtn" style="margin:0;">Yes, Proceed</button>
-        <button class="btn btn-secondary" id="confirmNoBtn" style="margin:0;">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      const TAB_CHAR = String.fromCharCode(9);
-      const LF_CHAR = String.fromCharCode(10);
-      const CR_CHAR = String.fromCharCode(13);
-
-      const secretSubtitle = document.getElementById('secretSubtitle');
-      const poolInput = document.getElementById('poolInput');
-      const poolCount = document.getElementById('poolCount');
-      const drawCountInput = document.getElementById('drawCount');
-      const reserveCountInput = document.getElementById('reserveCount');
-      const drawBtn = document.getElementById('drawBtn');
-      const resetBtn = document.getElementById('resetBtn');
-      const restorePoolBtn = document.getElementById('restorePoolBtn');
-      const clearPoolBtn = document.getElementById('clearPoolBtn');
-      const rollingDisplay = document.getElementById('rollingDisplay');
-      const statusText = document.getElementById('statusText');
-      const drawnCount = document.getElementById('drawnCount');
-      const tableWrapper = document.getElementById('tableWrapper');
-      const sortedTableBody = document.getElementById('sortedTableBody');
-      const sortBtns = document.querySelectorAll('.sort-btn');
-      const copyBtn = document.getElementById('copyBtn');
-      const copyExcelBtn = document.getElementById('copyExcelBtn');
-      const toastBanner = document.getElementById('toastBanner');
-
-      const adminModal = document.getElementById('adminModal');
-      const priorityInput = document.getElementById('priorityInput');
-      const excludedInput = document.getElementById('excludedInput');
-      const priorityBadge = document.getElementById('priorityBadge');
-      const excludedBadge = document.getElementById('excludedBadge');
-      const saveAdminBtn = document.getElementById('saveAdminBtn');
-      const closeAdminBtn = document.getElementById('closeAdminBtn');
-
-      const confirmModal = document.getElementById('confirmModal');
-      const confirmTitle = document.getElementById('confirmTitle');
-      const confirmDesc = document.getElementById('confirmDesc');
-      const confirmYesBtn = document.getElementById('confirmYesBtn');
-      const confirmNoBtn = document.getElementById('confirmNoBtn');
-
-      let results = [];
-      let priorityList = [];
-      let excludedList = [];
-      let initialPrioritySnapshot = [];
-      let initialExcludedSnapshot = [];
-      let initialPoolSnapshot = poolInput.value;
-      let currentSort = 'order';
-      let isDrawing = false;
-      let toastTimer = null;
-      let pendingConfirmAction = null;
-
-      function normalizeLineSpaces(str) {
-        return str.split(TAB_CHAR).join(' ').split(' ').filter(function(part) {
-          return part.length > 0;
-        }).join(' ');
-      }
-
-      function splitTextLines(text) {
-        return text.split(CR_CHAR).join('').split(LF_CHAR);
-      }
-
-      function isDigitChar(ch) {
-        const code = ch.charCodeAt(0);
-        return code >= 48 && code <= 57;
-      }
-
-      function isLetterChar(ch) {
-        const code = ch.charCodeAt(0);
-        return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
-      }
-
-      function isAllDigits(str) {
-        if (!str || str.length === 0) return false;
-        for (let i = 0; i < str.length; i++) {
-          if (!isDigitChar(str[i])) return false;
-        }
-        return true;
-      }
-
-      function showToast(msg, borderColor) {
-        toastBanner.textContent = msg;
-        toastBanner.style.borderColor = borderColor || '#16a34a';
-        toastBanner.style.display = 'flex';
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function() {
-          toastBanner.style.display = 'none';
-        }, 2800);
-      }
-
-      function openConfirmModal(title, desc, yesText, onConfirm) {
-        confirmTitle.textContent = title;
-        confirmDesc.textContent = desc;
-        confirmYesBtn.textContent = yesText;
-        pendingConfirmAction = onConfirm;
-        confirmModal.style.display = 'flex';
-      }
-
-      confirmYesBtn.addEventListener('click', function() {
-        confirmModal.style.display = 'none';
-        if (typeof pendingConfirmAction === 'function') {
-          pendingConfirmAction();
-          pendingConfirmAction = null;
-        }
-      });
-
-      confirmNoBtn.addEventListener('click', function() {
-        confirmModal.style.display = 'none';
-        pendingConfirmAction = null;
-      });
-
-      function parseCandidate(rawStr) {
-        const cleaned = normalizeLineSpaces(rawStr);
-        let idx = 0;
-        const len = cleaned.length;
-
-        let formDigits = '';
-        while (idx < len && isDigitChar(cleaned[idx])) {
-          formDigits += cleaned[idx];
-          idx++;
-        }
-
-        let classLetters = '';
-        while (idx < len && isLetterChar(cleaned[idx])) {
-          classLetters += cleaned[idx];
-          idx++;
-        }
-
-        if (formDigits.length > 0 && classLetters.length > 0) {
-          while (idx < len && (cleaned[idx] === ' ' || cleaned[idx] === '-' || cleaned[idx] === '–')) {
-            idx++;
-          }
-          let noDigits = '';
-          while (idx < len && isDigitChar(cleaned[idx])) {
-            noDigits += cleaned[idx];
-            idx++;
-          }
-          if (noDigits.length > 0 && (idx === len || cleaned[idx] === ' ')) {
-            const restName = cleaned.slice(idx).trim();
-            return {
-              className: (formDigits + classLetters).toUpperCase(),
-              classNo: noDigits
