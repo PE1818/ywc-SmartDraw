@@ -495,3 +495,677 @@
   </header>
 
   <main class="grid-2x2">
+    <!-- TOP-LEFT: 1. Lottery Machine -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>1. Lottery Machine</span>
+      </div>
+      <div class="machine-box">
+        <div class="rolling-text" id="rollingDisplay">READY</div>
+        <div class="rolling-status" id="statusText">Click Draw to start</div>
+      </div>
+      <div class="machine-actions">
+        <button class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
+        <button class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
+      </div>
+    </section>
+
+    <!-- TOP-RIGHT: 2. Selection Quota -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>2. Selection Quota</span>
+      </div>
+      <div class="qty-grid">
+        <div class="qty-box">
+          <label for="drawCount" class="qty-label-win">Capacity</label>
+          <input type="number" id="drawCount" class="qty-input" value="3" min="0">
+        </div>
+        <div class="qty-box">
+          <label for="reserveCount" class="qty-label-res">Reserve List</label>
+          <input type="number" id="reserveCount" class="qty-input qty-input-reserve" value="0" min="0">
+        </div>
+      </div>
+      <div class="helper-text">
+        Capacity slots are drawn first, followed immediately by the Reserve List.
+      </div>
+    </section>
+
+    <!-- BOTTOM-LEFT: 3. Candidate Pool -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <span>3. Candidate Pool</span>
+        <span class="badge" id="poolCount">0</span>
+      </div>
+      <textarea id="poolInput" placeholder="Paste list here (unlimited rows, one per line)&#10;Example:&#10;1A 01&#10;1A 02&#10;1A 09"></textarea>
+      <div class="table-actions">
+        <button class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
+        <button class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
+      </div>
+    </section>
+
+    <!-- BOTTOM-RIGHT: 4. Selection Results -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <span>4. Selection Results</span>
+        <span class="badge" id="drawnCount">0</span>
+      </div>
+      <div class="sort-controls">
+        <button class="sort-btn active" data-sort="order">Draw Order</button>
+        <button class="sort-btn" data-sort="class">Class / No.</button>
+        <button class="sort-btn" data-sort="name">Name (A-Z)</button>
+      </div>
+      <div class="table-wrapper" id="tableWrapper">
+        <table id="sortedTable">
+          <thead>
+            <tr>
+              <th style="width: 115px;">Status</th>
+              <th style="width: 80px;">Class</th>
+              <th style="width: 65px;">No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="sortedTableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <button class="btn btn-draw" id="copyExcelBtn" style="flex: 2; font-size: 0.98rem;">Table for Excel</button>
+        <button class="btn btn-secondary" id="copyBtn" style="flex: 1;">Text List</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Hidden Admin Settings Modal (Guaranteed vs Excluded) -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-box">
+      <div class="modal-title">Admin Allocation Settings</div>
+      <div class="modal-desc">
+        Configure guaranteed or excluded candidates below (one per line, header rows are auto-ignored).<br>
+        <span style="color: #fca5a5;">* <strong>Excluded</strong> entries are blocked from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
+      </div>
+
+      <div class="admin-grid">
+        <!-- LEFT: Guaranteed (GREEN) -->
+        <div class="admin-card-win">
+          <div class="admin-card-header">
+            <span class="tag-win">✓ GUARANTEED</span>
+            <span id="priorityBadge" style="font-size:0.8rem; color:#86efac; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
+        </div>
+
+        <!-- RIGHT: Excluded (RED) -->
+        <div class="admin-card-lose">
+          <div class="admin-card-header">
+            <span class="tag-lose">✕ EXCLUDED</span>
+            <span id="excludedBadge" style="font-size:0.8rem; color:#fca5a5; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
+        <button class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box" style="max-width: 390px;">
+      <div class="modal-title" id="confirmTitle" style="color: #dc2626;">Reset Drawn Results?</div>
+      <div class="modal-desc" id="confirmDesc">
+        This will clear all drawn winners and reserves from the results table.
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-reset" id="confirmYesBtn" style="margin:0;">Yes, Proceed</button>
+        <button class="btn btn-secondary" id="confirmNoBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const secretSubtitle = document.getElementById('secretSubtitle');
+    const poolInput = document.getElementById('poolInput');
+    const poolCount = document.getElementById('poolCount');
+    const drawCountInput = document.getElementById('drawCount');
+    const reserveCountInput = document.getElementById('reserveCount');
+    const drawBtn = document.getElementById('drawBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const restorePoolBtn = document.getElementById('restorePoolBtn');
+    const clearPoolBtn = document.getElementById('clearPoolBtn');
+    const rollingDisplay = document.getElementById('rollingDisplay');
+    const statusText = document.getElementById('statusText');
+    const drawnCount = document.getElementById('drawnCount');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const sortedTableBody = document.getElementById('sortedTableBody');
+    const sortBtns = document.querySelectorAll('.sort-btn');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyExcelBtn = document.getElementById('copyExcelBtn');
+    const toastBanner = document.getElementById('toastBanner');
+
+    // Hidden Admin Modal Elements
+    const adminModal = document.getElementById('adminModal');
+    const priorityInput = document.getElementById('priorityInput');
+    const excludedInput = document.getElementById('excludedInput');
+    const priorityBadge = document.getElementById('priorityBadge');
+    const excludedBadge = document.getElementById('excludedBadge');
+    const saveAdminBtn = document.getElementById('saveAdminBtn');
+    const closeAdminBtn = document.getElementById('closeAdminBtn');
+
+    // Custom Confirmation Modal Elements
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmDesc = document.getElementById('confirmDesc');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+    let results = [];
+    let priorityList = [];
+    let excludedList = [];
+    let initialPrioritySnapshot = [];
+    let initialExcludedSnapshot = [];
+    let initialPoolSnapshot = poolInput.value;
+    let currentSort = 'order';
+    let isDrawing = false;
+    let toastTimer = null;
+    let pendingConfirmAction = null;
+
+    function showToast(msg, borderColor = '#16a34a') {
+      toastBanner.textContent = msg;
+      toastBanner.style.borderColor = borderColor;
+      toastBanner.style.display = 'flex';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastBanner.style.display = 'none';
+      }, 2800);
+    }
+
+    function openConfirmModal(title, desc, yesText, onConfirm) {
+      confirmTitle.textContent = title;
+      confirmDesc.textContent = desc;
+      confirmYesBtn.textContent = yesText;
+      pendingConfirmAction = onConfirm;
+      confirmModal.style.display = 'flex';
+    }
+
+    confirmYesBtn.addEventListener('click', () => {
+      confirmModal.style.display = 'none';
+      if (typeof pendingConfirmAction === 'function') {
+        pendingConfirmAction();
+        pendingConfirmAction = null;
+      }
+    });
+
+    confirmNoBtn.addEventListener('click', () => {
+      confirmModal.style.display = 'none';
+      pendingConfirmAction = null;
+    });
+
+    function parseCandidate(rawStr) {
+      const cleaned = rawStr.replace(/\t+/g, ' ').trim();
+      const match = cleaned.match(/^([0-9]+[A-Za-z]+)\s*[-–]?\s*([0-9]+)(?:\s+(.*))?$/);
+      if (match) {
+        return {
+          className: match[1].toUpperCase(),
+          classNo: match[2],
+          name: match[3] ? match[3].trim() : '-'
+        };
+      }
+      return {
+        className: '-',
+        classNo: '-',
+        name: cleaned
+      };
+    }
+
+    function formatNoForExport(classNo) {
+      if (/^0+[1-9]\d*$/.test(classNo) || /^\d+$/.test(classNo)) {
+        return String(parseInt(classNo, 10));
+      }
+      return classNo;
+    }
+
+    function isHeaderRow(line) {
+      const normalized = line.replace(/\t+/g, ' ').trim().toLowerCase();
+      if (!normalized) return false;
+
+      const singleHeaders = [
+        'name', 'names', 'student', 'students', 'candidate', 'candidates',
+        'class', 'no', 'no.', 'number', 'class no', 'class no.', 'student name',
+        'full name', 'english name', 'chinese name', 'student id', 'email', 'remarks',
+        '姓名', '學生姓名', '英文姓名', '中文姓名', '班別', '學號', '班號', '名單', '參加者'
+      ];
+      if (singleHeaders.includes(normalized)) return true;
+
+      const headerKeywords = /^(class|form|grade|no\.?|num(ber)?|student\s*id|sams\s*id|name|student(\s*name)?|english\s*name|chinese\s*name|gender|sex|group|house|email|remarks?|note|notes|班別|年級|學號|班號|姓名|學生姓名|英文姓名|中文姓名|組別|社別|備註)$/;
+      const tokens = normalized.split(/[\s,;|/\\\-–—]+/).filter(Boolean);
+      if (tokens.length >= 2 && tokens.every(token => headerKeywords.test(token))) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function getPool() {
+      return poolInput.value
+        .split('\n')
+        .map(line => line.replace(/\t+/g, ' ').trim())
+        .filter(line => line.length > 0 && !isHeaderRow(line));
+    }
+
+    function updatePoolBadge() {
+      poolCount.textContent = getPool().length;
+    }
+
+    poolInput.addEventListener('input', () => {
+      initialPoolSnapshot = poolInput.value;
+      updatePoolBadge();
+    });
+
+    restorePoolBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      const executeRestore = () => {
+        poolInput.value = initialPoolSnapshot;
+        priorityList = [...initialPrioritySnapshot];
+        excludedList = [...initialExcludedSnapshot];
+        updatePoolBadge();
+        results = [];
+        rollingDisplay.textContent = 'READY';
+        statusText.textContent = 'List restored. Click Draw to start';
+        renderLists();
+        showToast('Original candidate list restored.', '#16a34a');
+      };
+
+      if (results.length > 0 || poolInput.value !== initialPoolSnapshot) {
+        openConfirmModal(
+          'Restore Original Pool?',
+          'This will restore the initial candidate list and reset all drawn results.',
+          'Yes, Restore',
+          executeRestore
+        );
+      } else {
+        executeRestore();
+      }
+    });
+
+    clearPoolBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      if (poolInput.value.trim() === '') {
+        poolInput.value = '';
+        initialPoolSnapshot = '';
+        updatePoolBadge();
+        return;
+      }
+      openConfirmModal(
+        'Clear Candidate Pool?',
+        'This will empty the Candidate Pool completely to blank.',
+        'Yes, Clear All',
+        () => {
+          poolInput.value = '';
+          initialPoolSnapshot = '';
+          updatePoolBadge();
+          showToast('Candidate Pool cleared to blank.', '#dc2626');
+        }
+      );
+    });
+
+    // Shared parser for Admin textareas: filters blank lines AND header rows just like Candidate Pool
+    function parseAdminLines(text) {
+      const validLines = text
+        .split('\n')
+        .map(line => line.replace(/\t+/g, ' ').trim())
+        .filter(line => line.length > 0 && !isHeaderRow(line));
+      return [...new Set(validLines)];
+    }
+
+    function updateAdminBadges() {
+      const pCount = parseAdminLines(priorityInput.value).length;
+      const eCount = parseAdminLines(excludedInput.value).length;
+      priorityBadge.textContent = `${pCount} ${pCount === 1 ? 'entry' : 'entries'}`;
+      excludedBadge.textContent = `${eCount} ${eCount === 1 ? 'entry' : 'entries'}`;
+    }
+
+    priorityInput.addEventListener('input', updateAdminBadges);
+    excludedInput.addEventListener('input', updateAdminBadges);
+
+    // Keyboard shortcuts (Alt+A / Option+A / Ctrl+Shift+H)
+    document.addEventListener('keydown', (e) => {
+      if ((e.altKey && (e.code === 'KeyA' || e.key === 'a' || e.key === 'A')) ||
+          (e.ctrlKey && e.shiftKey && (e.code === 'KeyH' || e.key === 'h' || e.key === 'H'))) {
+        e.preventDefault();
+        openAdminModal();
+      }
+    });
+
+    // Secret trigger 1: Tap/Click "SmartDraw" subtitle 5 times (each within 1000ms)
+    let subtitleTapCount = 0;
+    let subtitleLastTap = 0;
+    secretSubtitle.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - subtitleLastTap <= 1000) {
+        subtitleTapCount++;
+      } else {
+        subtitleTapCount = 1;
+      }
+      subtitleLastTap = now;
+
+      if (subtitleTapCount >= 5) {
+        subtitleTapCount = 0;
+        openAdminModal();
+      }
+    });
+
+    function openAdminModal() {
+      priorityInput.value = priorityList.join('\n');
+      excludedInput.value = excludedList.join('\n');
+      updateAdminBadges();
+      adminModal.style.display = 'flex';
+    }
+
+    saveAdminBtn.addEventListener('click', () => {
+      excludedList = parseAdminLines(excludedInput.value);
+      priorityList = parseAdminLines(priorityInput.value).filter(item => !excludedList.includes(item));
+
+      initialExcludedSnapshot = [...excludedList];
+      initialPrioritySnapshot = [...priorityList];
+
+      adminModal.style.display = 'none';
+      showToast(`Settings saved (Guaranteed: ${priorityList.length}, Excluded: ${excludedList.length}).`, '#16a34a');
+    });
+
+    closeAdminBtn.addEventListener('click', () => {
+      adminModal.style.display = 'none';
+    });
+
+    async function drawOneCandidate(type) {
+      let pool = getPool();
+      const currentEligible = pool.filter(c => !excludedList.includes(c));
+      if (currentEligible.length === 0) return false;
+
+      let chosenCandidate = null;
+      const availablePriorities = priorityList.filter(p => currentEligible.includes(p));
+
+      if (availablePriorities.length > 0) {
+        const randIdx = Math.floor(Math.random() * availablePriorities.length);
+        chosenCandidate = availablePriorities[randIdx];
+        priorityList = priorityList.filter(p => p !== chosenCandidate);
+      } else {
+        const randIdx = Math.floor(Math.random() * currentEligible.length);
+        chosenCandidate = currentEligible[randIdx];
+      }
+
+      await animateSlot(pool, chosenCandidate);
+
+      const removeIdx = pool.indexOf(chosenCandidate);
+      if (removeIdx > -1) {
+        pool.splice(removeIdx, 1);
+      }
+      poolInput.value = pool.join('\n');
+      updatePoolBadge();
+
+      const parsed = parseCandidate(chosenCandidate);
+      const typeCount = results.filter(r => r.type === type).length + 1;
+      const statusLabel = type === 'winner' ? `Winner #${typeCount}` : `Reserve #${typeCount}`;
+
+      results.push({
+        order: results.length + 1,
+        type: type,
+        typeOrder: typeCount,
+        statusLabel: statusLabel,
+        raw: chosenCandidate,
+        className: parsed.className,
+        classNo: parsed.classNo,
+        name: parsed.name
+      });
+
+      renderLists();
+      return true;
+    }
+
+    drawBtn.addEventListener('click', async () => {
+      if (isDrawing) return;
+
+      const pool = getPool();
+      const winnersToDraw = parseInt(drawCountInput.value, 10) || 0;
+      const reservesToDraw = parseInt(reserveCountInput.value, 10) || 0;
+      const totalToDraw = winnersToDraw + reservesToDraw;
+
+      if (pool.length === 0) {
+        showToast('The Candidate Pool is empty!', '#dc2626');
+        return;
+      }
+      if (winnersToDraw < 0 || reservesToDraw < 0 || totalToDraw <= 0) {
+        showToast('Please enter at least 1 for Capacity or Reserve List.', '#dc2626');
+        return;
+      }
+
+      const eligiblePool = pool.filter(c => !excludedList.includes(c));
+      if (eligiblePool.length === 0) {
+        showToast('No eligible candidates remaining in the pool.', '#dc2626');
+        return;
+      }
+      if (totalToDraw > eligiblePool.length) {
+        showToast(`Need ${totalToDraw} slots, but only ${eligiblePool.length} eligible candidates available.`, '#dc2626');
+        return;
+      }
+
+      isDrawing = true;
+      drawBtn.disabled = true;
+      resetBtn.disabled = true;
+      restorePoolBtn.disabled = true;
+      clearPoolBtn.disabled = true;
+      poolInput.disabled = true;
+
+      for (let i = 0; i < winnersToDraw; i++) {
+        statusText.textContent = `Drawing Winner ${i + 1} of ${winnersToDraw}...`;
+        statusText.style.color = '#86efac';
+        const ok = await drawOneCandidate('winner');
+        if (!ok) break;
+      }
+
+      for (let j = 0; j < reservesToDraw; j++) {
+        statusText.textContent = `Drawing Reserve ${j + 1} of ${reservesToDraw}...`;
+        statusText.style.color = '#fbbf24';
+        const ok = await drawOneCandidate('reserve');
+        if (!ok) break;
+      }
+
+      statusText.style.color = '#86efac';
+      if (reservesToDraw > 0) {
+        statusText.textContent = `Completed (${winnersToDraw} Winners, ${reservesToDraw} Reserves)`;
+      } else {
+        statusText.textContent = `Completed (${winnersToDraw} Winners drawn)`;
+      }
+
+      isDrawing = false;
+      drawBtn.disabled = false;
+      resetBtn.disabled = false;
+      restorePoolBtn.disabled = false;
+      clearPoolBtn.disabled = false;
+      poolInput.disabled = false;
+    });
+
+    function animateSlot(pool, finalWinner) {
+      return new Promise(resolve => {
+        let ticks = 0;
+        const maxTicks = 12;
+        const interval = setInterval(() => {
+          const randomShow = pool[Math.floor(Math.random() * pool.length)];
+          rollingDisplay.textContent = randomShow;
+          ticks++;
+          if (ticks >= maxTicks) {
+            clearInterval(interval);
+            rollingDisplay.textContent = finalWinner;
+            resolve();
+          }
+        }, 50);
+      });
+    }
+
+    function getSortedResults() {
+      let sorted = [...results];
+      if (currentSort === 'order') {
+        sorted.sort((a, b) => a.order - b.order);
+      } else if (currentSort === 'class') {
+        sorted.sort((a, b) => {
+          const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
+          if (classCmp !== 0) return classCmp;
+          return a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
+        });
+      } else if (currentSort === 'name') {
+        sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      }
+      return sorted;
+    }
+
+    function renderLists() {
+      drawnCount.textContent = results.length;
+      const sorted = getSortedResults();
+      sortedTableBody.innerHTML = '';
+
+      sorted.forEach(item => {
+        const tr = document.createElement('tr');
+        const statusClass = item.type === 'winner' ? 'td-status-win' : 'td-status-res';
+        tr.innerHTML = `
+          <td class="${statusClass}">${escapeHtml(item.statusLabel)}</td>
+          <td>${escapeHtml(item.className)}</td>
+          <td>${escapeHtml(item.classNo)}</td>
+          <td>${escapeHtml(item.name)}</td>
+        `;
+        sortedTableBody.appendChild(tr);
+      });
+
+      if (currentSort === 'order') {
+        tableWrapper.scrollTop = tableWrapper.scrollHeight;
+      }
+    }
+
+    sortBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sortBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
+        renderLists();
+      });
+    });
+
+    function copyTextToClipboard(text, btn, tempLabel, toastMsg) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        const origText = btn.textContent;
+        btn.textContent = tempLabel;
+        setTimeout(() => { btn.textContent = origText; }, 1500);
+        showToast(toastMsg, '#16a34a');
+      } catch (err) {
+        showToast('Failed to copy to clipboard.', '#dc2626');
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+
+    copyBtn.addEventListener('click', () => {
+      if (results.length === 0) {
+        showToast('No results to copy yet.', '#dc2626');
+        return;
+      }
+      const sorted = getSortedResults();
+      const listText = sorted.map(w => {
+        if (w.className !== '-' && w.classNo !== '-') {
+          const exportNo = formatNoForExport(w.classNo);
+          return w.name !== '-'
+            ? `${w.statusLabel}\t${w.className}\t${exportNo}\t${w.name}`
+            : `${w.statusLabel}\t${w.className}\t${exportNo}`;
+        }
+        return `${w.statusLabel}\t${w.raw}`;
+      }).join('\n');
+      copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
+    });
+
+    // Secret trigger 2: Reliable 10-tap detection on "Table for Excel" using pointerdown (1000ms gap)
+    let excelTapCount = 0;
+    let excelLastTap = 0;
+
+    copyExcelBtn.addEventListener('pointerdown', () => {
+      const now = Date.now();
+      if (now - excelLastTap <= 1000) {
+        excelTapCount++;
+      } else {
+        excelTapCount = 1;
+      }
+      excelLastTap = now;
+
+      if (excelTapCount >= 10) {
+        excelTapCount = 0;
+        openAdminModal();
+      }
+    });
+
+    copyExcelBtn.addEventListener('click', () => {
+      if (excelTapCount > 1) return;
+
+      if (results.length === 0) {
+        showToast('No results to copy yet.', '#dc2626');
+        return;
+      }
+
+      const sorted = getSortedResults();
+      const hasAnyName = sorted.some(w => w.name !== '-');
+
+      let header, rows;
+      if (hasAnyName) {
+        header = ['Status', 'Class', 'No.', 'Name'].join('\t');
+        rows = sorted.map(w => [
+          w.statusLabel,
+          w.className,
+          formatNoForExport(w.classNo),
+          w.name === '-' ? '' : w.name
+        ].join('\t'));
+      } else {
+        header = ['Status', 'Class', 'No.'].join('\t');
+        rows = sorted.map(w => [
+          w.statusLabel,
+          w.className,
+          formatNoForExport(w.classNo)
+        ].join('\t'));
+      }
+
+      const tsv = [header, ...rows].join('\n');
+      copyTextToClipboard(tsv, copyExcelBtn, 'Copied for Excel!', 'Table copied! Paste directly into Excel (Ctrl+V).');
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      if (results.length === 0) return;
+      openConfirmModal(
+        'Reset Drawn Results?',
+        'This will clear all drawn winners and reserves from the results table while keeping the remaining Candidate Pool.',
+        'Yes, Clear',
+        () => {
+          results = [];
+          rollingDisplay.textContent = 'READY';
+          statusText.textContent = 'Click Draw to start';
+          statusText.style.color = '#86efac';
+          renderLists();
+          showToast('Drawn results cleared.', '#16a34a');
+        }
+      );
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    updatePoolBadge();
+  </script>
+</body>
+</html>
