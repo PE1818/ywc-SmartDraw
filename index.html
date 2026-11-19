@@ -41,10 +41,10 @@
       text-transform: uppercase;
       letter-spacing: 2px;
       margin-top: 0.25rem;
-      padding: 0.35rem 1rem;
+      padding: 0.4rem 1.25rem;
       display: inline-block;
       font-weight: 800;
-      cursor: default;
+      cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
@@ -356,7 +356,7 @@
       padding: 0.85rem 1.25rem;
       border-radius: 0.75rem;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
-      z-index: 2000;
+      z-index: 9999;
       font-size: 0.9rem;
       font-weight: 600;
       display: none;
@@ -368,11 +368,14 @@
     .modal-overlay {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.88);
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 9998;
       padding: 1rem;
     }
     .modal-box {
@@ -498,7 +501,7 @@
   <!-- Header -->
   <header>
     <div class="header-title">Ying Wa College</div>
-    <div class="header-subtitle" id="secretSubtitle">SmartDraw</div>
+    <div class="header-subtitle" id="secretSubtitle" onclick="window.__sdTapSubtitle && window.__sdTapSubtitle()">SmartDraw</div>
   </header>
 
   <main class="grid-2x2">
@@ -512,8 +515,8 @@
         <div class="rolling-status" id="statusText">Click Draw to start</div>
       </div>
       <div class="machine-actions">
-        <button class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
-        <button class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
+        <button type="button" class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
+        <button type="button" class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
       </div>
     </section>
 
@@ -545,8 +548,8 @@
       </div>
       <textarea id="poolInput" placeholder="Paste list here (unlimited rows, one per line)&#10;Example:&#10;1A 01&#10;1A 02&#10;1A 09"></textarea>
       <div class="table-actions">
-        <button class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
-        <button class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
+        <button type="button" class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
+        <button type="button" class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
       </div>
     </section>
 
@@ -555,3 +558,272 @@
       <div class="panel-header">
         <span>4. Selection Results</span>
         <span class="badge" id="drawnCount">0</span>
+      </div>
+      <div class="sort-controls">
+        <button type="button" class="sort-btn active" data-sort="order">Draw Order</button>
+        <button type="button" class="sort-btn" data-sort="class">Class / No.</button>
+        <button type="button" class="sort-btn" data-sort="name">Name (A-Z)</button>
+      </div>
+      <div class="table-wrapper" id="tableWrapper">
+        <table id="sortedTable">
+          <thead>
+            <tr>
+              <th style="width: 115px;">Status</th>
+              <th style="width: 80px;">Class</th>
+              <th style="width: 65px;">No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="sortedTableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <button type="button" class="btn btn-draw" id="copyExcelBtn" onclick="window.__sdTapExcel && window.__sdTapExcel()" style="flex: 2; font-size: 0.98rem;">Table for Excel</button>
+        <button type="button" class="btn btn-secondary" id="copyBtn" style="flex: 1;">Text List</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Hidden Admin Settings Modal (Guaranteed vs Excluded) -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-box">
+      <div class="modal-title">Admin Allocation Settings</div>
+      <div class="modal-desc">
+        Configure guaranteed or excluded candidates below (one per line, header rows are auto-ignored).<br>
+        <span style="color: #fca5a5;">* <strong>Excluded</strong> entries are blocked from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
+      </div>
+
+      <div class="admin-grid">
+        <!-- LEFT: Guaranteed (GREEN) -->
+        <div class="admin-card-win">
+          <div class="admin-card-header">
+            <span class="tag-win">✓ GUARANTEED</span>
+            <span id="priorityBadge" style="font-size:0.8rem; color:#86efac; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
+        </div>
+
+        <!-- RIGHT: Excluded (RED) -->
+        <div class="admin-card-lose">
+          <div class="admin-card-header">
+            <span class="tag-lose">✕ EXCLUDED</span>
+            <span id="excludedBadge" style="font-size:0.8rem; color:#fca5a5; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
+        <button type="button" class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box" style="max-width: 390px;">
+      <div class="modal-title" id="confirmTitle" style="color: #dc2626;">Reset Drawn Results?</div>
+      <div class="modal-desc" id="confirmDesc">
+        This will clear all drawn selected entries and reserves from the results table.
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-reset" id="confirmYesBtn" style="margin:0;">Yes, Proceed</button>
+        <button type="button" class="btn btn-secondary" id="confirmNoBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var TAB_CHAR = String.fromCharCode(9);
+      var LF_CHAR = String.fromCharCode(10);
+      var CR_CHAR = String.fromCharCode(13);
+
+      var poolInput = document.getElementById('poolInput');
+      var poolCount = document.getElementById('poolCount');
+      var drawCountInput = document.getElementById('drawCount');
+      var reserveCountInput = document.getElementById('reserveCount');
+      var drawBtn = document.getElementById('drawBtn');
+      var resetBtn = document.getElementById('resetBtn');
+      var restorePoolBtn = document.getElementById('restorePoolBtn');
+      var clearPoolBtn = document.getElementById('clearPoolBtn');
+      var rollingDisplay = document.getElementById('rollingDisplay');
+      var statusText = document.getElementById('statusText');
+      var drawnCount = document.getElementById('drawnCount');
+      var tableWrapper = document.getElementById('tableWrapper');
+      var sortedTableBody = document.getElementById('sortedTableBody');
+      var sortBtns = document.querySelectorAll('.sort-btn');
+      var copyBtn = document.getElementById('copyBtn');
+      var copyExcelBtn = document.getElementById('copyExcelBtn');
+      var toastBanner = document.getElementById('toastBanner');
+
+      var adminModal = document.getElementById('adminModal');
+      var priorityInput = document.getElementById('priorityInput');
+      var excludedInput = document.getElementById('excludedInput');
+      var priorityBadge = document.getElementById('priorityBadge');
+      var excludedBadge = document.getElementById('excludedBadge');
+      var saveAdminBtn = document.getElementById('saveAdminBtn');
+      var closeAdminBtn = document.getElementById('closeAdminBtn');
+
+      var confirmModal = document.getElementById('confirmModal');
+      var confirmTitle = document.getElementById('confirmTitle');
+      var confirmDesc = document.getElementById('confirmDesc');
+      var confirmYesBtn = document.getElementById('confirmYesBtn');
+      var confirmNoBtn = document.getElementById('confirmNoBtn');
+
+      var results = [];
+      var priorityList = [];
+      var excludedList = [];
+      var initialPrioritySnapshot = [];
+      var initialExcludedSnapshot = [];
+      var initialPoolSnapshot = poolInput.value;
+      var currentSort = 'order';
+      var isDrawing = false;
+      var toastTimer = null;
+      var pendingConfirmAction = null;
+
+      function normalizeLineSpaces(str) {
+        return str.split(TAB_CHAR).join(' ').split(' ').filter(function(part) {
+          return part.length > 0;
+        }).join(' ');
+      }
+
+      function splitTextLines(text) {
+        return text.split(CR_CHAR).join('').split(LF_CHAR);
+      }
+
+      function isDigitChar(ch) {
+        var code = ch.charCodeAt(0);
+        return code >= 48 && code <= 57;
+      }
+
+      function isLetterChar(ch) {
+        var code = ch.charCodeAt(0);
+        return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+      }
+
+      function isAllDigits(str) {
+        if (!str || str.length === 0) return false;
+        for (var i = 0; i < str.length; i++) {
+          if (!isDigitChar(str[i])) return false;
+        }
+        return true;
+      }
+
+      function showToast(msg, borderColor) {
+        toastBanner.textContent = msg;
+        toastBanner.style.borderColor = borderColor || '#16a34a';
+        toastBanner.style.display = 'flex';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() {
+          toastBanner.style.display = 'none';
+        }, 2800);
+      }
+
+      function openConfirmModal(title, desc, yesText, onConfirm) {
+        confirmTitle.textContent = title;
+        confirmDesc.textContent = desc;
+        confirmYesBtn.textContent = yesText;
+        pendingConfirmAction = onConfirm;
+        confirmModal.style.display = 'flex';
+      }
+
+      confirmYesBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+        if (typeof pendingConfirmAction === 'function') {
+          pendingConfirmAction();
+          pendingConfirmAction = null;
+        }
+      });
+
+      confirmNoBtn.addEventListener('click', function() {
+        confirmModal.style.display = 'none';
+        pendingConfirmAction = null;
+      });
+
+      function parseCandidate(rawStr) {
+        var cleaned = normalizeLineSpaces(rawStr);
+        var idx = 0;
+        var len = cleaned.length;
+
+        var formDigits = '';
+        while (idx < len && isDigitChar(cleaned[idx])) {
+          formDigits += cleaned[idx];
+          idx++;
+        }
+
+        var classLetters = '';
+        while (idx < len && isLetterChar(cleaned[idx])) {
+          classLetters += cleaned[idx];
+          idx++;
+        }
+
+        if (formDigits.length > 0 && classLetters.length > 0) {
+          while (idx < len && (cleaned[idx] === ' ' || cleaned[idx] === '-' || cleaned[idx] === '–')) {
+            idx++;
+          }
+          var noDigits = '';
+          while (idx < len && isDigitChar(cleaned[idx])) {
+            noDigits += cleaned[idx];
+            idx++;
+          }
+          if (noDigits.length > 0 && (idx === len || cleaned[idx] === ' ')) {
+            var restName = cleaned.slice(idx).trim();
+            return {
+              className: (formDigits + classLetters).toUpperCase(),
+              classNo: noDigits,
+              name: restName.length > 0 ? restName : '-'
+            };
+          }
+        }
+
+        return {
+          className: '-',
+          classNo: '-',
+          name: cleaned
+        };
+      }
+
+      function formatNoForExport(classNo) {
+        if (isAllDigits(classNo)) {
+          return String(parseInt(classNo, 10));
+        }
+        return classNo;
+      }
+
+      var SINGLE_HEADERS = [
+        'name', 'names', 'student', 'students', 'candidate', 'candidates',
+        'class', 'no', 'no.', 'number', 'class no', 'class no.', 'student name',
+        'full name', 'english name', 'chinese name', 'student id', 'sams id',
+        'email', 'remarks', 'remark', 'note', 'notes',
+        '姓名', '學生姓名', '英文姓名', '中文姓名', '班別', '學號', '班號', '名單', '參加者'
+      ];
+
+      var HEADER_TOKENS = [
+        'class', 'form', 'grade', 'no', 'no.', 'num', 'number', 'id',
+        'student', 'sams', 'name', 'names', 'english', 'chinese', 'full',
+        'gender', 'sex', 'group', 'house', 'email', 'remark', 'remarks', 'note', 'notes',
+        '班別', '年級', '學號', '班號', '姓名', '學生姓名', '英文姓名', '中文姓名', '組別', '社別', '備註'
+      ];
+
+      function isHeaderRow(line) {
+        var normalized = normalizeLineSpaces(line).toLowerCase();
+        if (!normalized) return false;
+
+        if (SINGLE_HEADERS.indexOf(normalized) !== -1) {
+          return true;
+        }
+
+        var cleanedTokensStr = '';
+        var seps = [',', ';', '|', '/', '-', '–', '—'];
+        for (var i = 0; i < normalized.length; i++) {
+          var ch = normalized[i];
+          cleanedTokensStr += (seps.indexOf(ch) !== -1) ? ' ' : ch;
+        }
+
+        var tokens = cleanedTokensStr.split(' ').filter(function(t) {
+          return t.length > 0;
+        });
+
+        if (tokens.length >=
