@@ -75,4 +75,1096 @@
       min-height: 220px;
     }
     .panel-bottom {
-      height: 55
+      height: 55vh;
+      min-height: 420px;
+    }
+    .panel-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #143322;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      background: #052e16;
+      color: #4ade80;
+      border: 1px solid #166534;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    /* Panel 1: Lottery Machine */
+    .machine-box {
+      flex: 1;
+      background: #050a07;
+      border: 2px solid #22c55e;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      box-shadow: inset 0 0 22px rgba(34, 197, 94, 0.16);
+    }
+    .rolling-text {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #ffffff;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .rolling-status {
+      font-size: 0.85rem;
+      color: #86efac;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+    .machine-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 0.98rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.65rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-draw {
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 1.1rem;
+    }
+    .btn-draw:hover:not(:disabled) {
+      background: #15803d;
+    }
+    .btn-reset {
+      background: #b91c1c;
+      color: #ffffff;
+    }
+    .btn-reset:hover:not(:disabled) {
+      background: #991b1b;
+    }
+    .btn-secondary {
+      background: #16261e;
+      color: #dcfce7;
+      border: 1px solid #1f3a2c;
+    }
+    .btn-secondary:hover {
+      background: #1f3a2c;
+    }
+    .btn-outline-danger {
+      background: #0d1712;
+      color: #f87171;
+      border: 1px solid #7f1d1d;
+    }
+    .btn-outline-danger:hover:not(:disabled) {
+      background: #450a0a;
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    /* Panel 2: Selection Quota (Capacity & Reserve List) */
+    .qty-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      align-items: center;
+    }
+    .qty-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #050a07;
+      border: 1px solid #163022;
+      border-radius: 0.75rem;
+      padding: 0.85rem 0.75rem;
+      height: 100%;
+    }
+    .qty-label-win {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #4ade80;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+    .qty-label-res {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+    .qty-input {
+      width: 100%;
+      max-width: 160px;
+      font-size: 2.15rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 0.45rem;
+      border-radius: 0.65rem;
+      border: 2px solid #166534;
+      background: #0d1712;
+      color: #22c55e;
+    }
+    .qty-input:focus {
+      outline: none;
+      border-color: #4ade80;
+    }
+    .qty-input-reserve {
+      border-color: #92400e;
+      color: #fbbf24;
+    }
+    .qty-input-reserve:focus {
+      border-color: #f59e0b;
+    }
+    .helper-text {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 0.65rem;
+      line-height: 1.4;
+    }
+
+    /* Panel 3 & 4: Lists & Textarea */
+    textarea {
+      width: 100%;
+      flex: 1;
+      background: #050a07;
+      color: #ecfdf5;
+      border: 1px solid #163022;
+      border-radius: 0.65rem;
+      padding: 0.75rem;
+      font-size: 0.92rem;
+      resize: none;
+      line-height: 1.6;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #22c55e;
+    }
+
+    /* Sorting Controls & Table */
+    .sort-controls {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .sort-btn {
+      flex: 1;
+      padding: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #050a07;
+      color: #9ca3af;
+      border: 1px solid #163022;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sort-btn.active {
+      background: #16a34a;
+      color: #ffffff;
+      border-color: #16a34a;
+    }
+    .table-wrapper {
+      flex: 1;
+      background: #050a07;
+      border-radius: 0.65rem;
+      overflow-y: auto;
+      border: 1px solid #163022;
+    }
+    .table-actions {
+      display: flex;
+      gap: 0.65rem;
+      margin-top: 0.65rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      background: #0d1712;
+      z-index: 1;
+    }
+    th {
+      padding: 0.6rem 0.65rem;
+      color: #22c55e;
+      font-weight: 700;
+      border-bottom: 1px solid #163022;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid #0d1712;
+      color: #ecfdf5;
+    }
+    tbody tr:hover {
+      background: #0d1712;
+    }
+    .td-status-win {
+      color: #4ade80;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .td-status-res {
+      color: #fbbf24;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Custom Toast Notification */
+    .toast-banner {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: #0d1712;
+      color: #ecfdf5;
+      border: 2px solid #22c55e;
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+      z-index: 2000;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: #0d1712;
+      padding: 1.75rem;
+      border-radius: 1rem;
+      width: 95%;
+      max-width: 960px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #22c55e;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.75);
+    }
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 0.4rem;
+    }
+    .modal-desc {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-bottom: 1.1rem;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.1rem;
+    }
+
+    /* High-Contrast Admin Dual Cards */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      flex: 1;
+      min-height: 0;
+    }
+    @media (max-width: 680px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+    }
+    .admin-card-win {
+      background: rgba(6, 78, 59, 0.25);
+      border: 2px solid #22c55e;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-lose {
+      background: rgba(127, 29, 29, 0.25);
+      border: 2px solid #ef4444;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      gap: 0.5rem;
+    }
+    .tag-win {
+      background: #22c55e;
+      color: #052e16;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 0.35rem;
+      letter-spacing: 0.5px;
+    }
+    .tag-lose {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 0.35rem;
+      letter-spacing: 0.5px;
+    }
+    .admin-textarea-win {
+      height: 340px;
+      min-height: 240px;
+      max-height: 48vh;
+      background: #040906;
+      border: 1px solid #166534;
+      color: #dcfce7;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .admin-textarea-win:focus {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25);
+    }
+    .admin-textarea-lose {
+      height: 340px;
+      min-height: 240px;
+      max-height: 48vh;
+      background: #0c0505;
+      border: 1px solid #991b1b;
+      color: #fee2e2;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .admin-textarea-lose:focus {
+      border-color: #f87171;
+      box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Banner -->
+  <div id="toastBanner" class="toast-banner"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-title">Ying Wa College</div>
+    <div class="header-subtitle" id="secretSubtitle">SmartDraw</div>
+  </header>
+
+  <main class="grid-2x2">
+    <!-- TOP-LEFT: 1. Lottery Machine -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>1. Lottery Machine</span>
+      </div>
+      <div class="machine-box">
+        <div class="rolling-text" id="rollingDisplay">READY</div>
+        <div class="rolling-status" id="statusText">Click Draw to start</div>
+      </div>
+      <div class="machine-actions">
+        <button class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
+        <button class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
+      </div>
+    </section>
+
+    <!-- TOP-RIGHT: 2. Selection Quota -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>2. Selection Quota</span>
+      </div>
+      <div class="qty-grid">
+        <div class="qty-box">
+          <label for="drawCount" class="qty-label-win">Capacity</label>
+          <input type="number" id="drawCount" class="qty-input" value="3" min="0">
+        </div>
+        <div class="qty-box">
+          <label for="reserveCount" class="qty-label-res">Reserve List</label>
+          <input type="number" id="reserveCount" class="qty-input qty-input-reserve" value="0" min="0">
+        </div>
+      </div>
+      <div class="helper-text">
+        Capacity slots are drawn first, followed immediately by the Reserve List.
+      </div>
+    </section>
+
+    <!-- BOTTOM-LEFT: 3. Candidate Pool -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <span>3. Candidate Pool</span>
+        <span class="badge" id="poolCount">0</span>
+      </div>
+      <textarea id="poolInput" placeholder="Paste list here (unlimited rows, one per line)&#10;Example:&#10;1A 01&#10;1A 02&#10;1A 09"></textarea>
+      <div class="table-actions">
+        <button class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
+        <button class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
+      </div>
+    </section>
+
+    <!-- BOTTOM-RIGHT: 4. Unified Winners & Reserve Results Table -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <span>4. Winners &amp; Reserve Results</span>
+        <span class="badge" id="drawnCount">0</span>
+      </div>
+      <div class="sort-controls">
+        <button class="sort-btn active" data-sort="order">Draw Order</button>
+        <button class="sort-btn" data-sort="class">Class / No.</button>
+        <button class="sort-btn" data-sort="name">Name (A-Z)</button>
+      </div>
+      <div class="table-wrapper" id="tableWrapper">
+        <table id="sortedTable">
+          <thead>
+            <tr>
+              <th style="width: 115px;">Status</th>
+              <th style="width: 80px;">Class</th>
+              <th style="width: 65px;">No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="sortedTableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <button class="btn btn-draw" id="copyExcelBtn" style="flex: 2; font-size: 0.98rem;">Table for Excel</button>
+        <button class="btn btn-secondary" id="copyBtn" style="flex: 1;">Text List</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Hidden Admin Settings Modal (Guaranteed vs Excluded) -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-box">
+      <div class="modal-title">Admin Allocation Settings</div>
+      <div class="modal-desc">
+        Configure guaranteed winners or excluded candidates below (one per line, exact match with Candidate Pool).<br>
+        <span style="color: #fca5a5;">* <strong>Excluded (Cannot Win)</strong> blocks entries from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
+      </div>
+
+      <div class="admin-grid">
+        <!-- LEFT: Guaranteed Winners (GREEN) -->
+        <div class="admin-card-win">
+          <div class="admin-card-header">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="tag-win">✓ MUST WIN</span>
+              <span style="font-weight:700; color:#4ade80; font-size:0.95rem;">Guaranteed</span>
+            </div>
+            <span id="priorityBadge" style="font-size:0.8rem; color:#86efac; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
+        </div>
+
+        <!-- RIGHT: Excluded / Cannot Win (RED) -->
+        <div class="admin-card-lose">
+          <div class="admin-card-header">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="tag-lose">✕ CANNOT WIN</span>
+              <span style="font-weight:700; color:#f87171; font-size:0.95rem;">Excluded</span>
+            </div>
+            <span id="excludedBadge" style="font-size:0.8rem; color:#fca5a5; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
+        <button class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box" style="max-width: 390px;">
+      <div class="modal-title" id="confirmTitle" style="color: #dc2626;">Reset Drawn Results?</div>
+      <div class="modal-desc" id="confirmDesc">
+        This will clear all drawn winners and reserves from the results table.
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-reset" id="confirmYesBtn" style="margin:0;">Yes, Proceed</button>
+        <button class="btn btn-secondary" id="confirmNoBtn" style="margin:0;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const secretSubtitle = document.getElementById('secretSubtitle');
+    const poolInput = document.getElementById('poolInput');
+    const poolCount = document.getElementById('poolCount');
+    const drawCountInput = document.getElementById('drawCount');
+    const reserveCountInput = document.getElementById('reserveCount');
+    const drawBtn = document.getElementById('drawBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const restorePoolBtn = document.getElementById('restorePoolBtn');
+    const clearPoolBtn = document.getElementById('clearPoolBtn');
+    const rollingDisplay = document.getElementById('rollingDisplay');
+    const statusText = document.getElementById('statusText');
+    const drawnCount = document.getElementById('drawnCount');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const sortedTableBody = document.getElementById('sortedTableBody');
+    const sortBtns = document.querySelectorAll('.sort-btn');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyExcelBtn = document.getElementById('copyExcelBtn');
+    const toastBanner = document.getElementById('toastBanner');
+
+    // Hidden Admin Modal Elements
+    const adminModal = document.getElementById('adminModal');
+    const priorityInput = document.getElementById('priorityInput');
+    const excludedInput = document.getElementById('excludedInput');
+    const priorityBadge = document.getElementById('priorityBadge');
+    const excludedBadge = document.getElementById('excludedBadge');
+    const saveAdminBtn = document.getElementById('saveAdminBtn');
+    const closeAdminBtn = document.getElementById('closeAdminBtn');
+
+    // Custom Confirmation Modal Elements
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmDesc = document.getElementById('confirmDesc');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+    let results = [];
+    let priorityList = [];
+    let excludedList = [];
+    let initialPrioritySnapshot = [];
+    let initialExcludedSnapshot = [];
+    let initialPoolSnapshot = poolInput.value;
+    let currentSort = 'order';
+    let isDrawing = false;
+    let toastTimer = null;
+    let pendingConfirmAction = null;
+
+    function showToast(msg, borderColor = '#16a34a') {
+      toastBanner.textContent = msg;
+      toastBanner.style.borderColor = borderColor;
+      toastBanner.style.display = 'flex';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastBanner.style.display = 'none';
+      }, 2800);
+    }
+
+    function openConfirmModal(title, desc, yesText, onConfirm) {
+      confirmTitle.textContent = title;
+      confirmDesc.textContent = desc;
+      confirmYesBtn.textContent = yesText;
+      pendingConfirmAction = onConfirm;
+      confirmModal.style.display = 'flex';
+    }
+
+    confirmYesBtn.addEventListener('click', () => {
+      confirmModal.style.display = 'none';
+      if (typeof pendingConfirmAction === 'function') {
+        pendingConfirmAction();
+        pendingConfirmAction = null;
+      }
+    });
+
+    confirmNoBtn.addEventListener('click', () => {
+      confirmModal.style.display = 'none';
+      pendingConfirmAction = null;
+    });
+
+    function parseCandidate(rawStr) {
+      const cleaned = rawStr.replace(/\t+/g, ' ').trim();
+      const match = cleaned.match(/^([0-9]+[A-Za-z]+)\s*[-–]?\s*([0-9]+)(?:\s+(.*))?$/);
+      if (match) {
+        return {
+          className: match[1].toUpperCase(),
+          classNo: match[2],
+          name: match[3] ? match[3].trim() : '-'
+        };
+      }
+      return {
+        className: '-',
+        classNo: '-',
+        name: cleaned
+      };
+    }
+
+    function formatNoForExport(classNo) {
+      if (/^0+[1-9]\d*$/.test(classNo) || /^\d+$/.test(classNo)) {
+        return String(parseInt(classNo, 10));
+      }
+      return classNo;
+    }
+
+    function isHeaderRow(line) {
+      const normalized = line.replace(/\t+/g, ' ').trim().toLowerCase();
+      if (!normalized) return false;
+
+      const singleHeaders = [
+        'name', 'names', 'student', 'students', 'candidate', 'candidates',
+        'class', 'no', 'no.', 'number', 'class no', 'class no.', 'student name',
+        'full name', 'english name', 'chinese name'
+      ];
+      if (singleHeaders.includes(normalized)) return true;
+
+      const headerKeywords = /^(class|form|grade|no\.?|num(ber)?|student\s*id|name|student(\s*name)?|english\s*name|chinese\s*name|gender|sex|group|house)$/;
+      const tokens = normalized.split(/[\s,;|/\\\-–—]+/).filter(Boolean);
+      if (tokens.length >= 2 && tokens.every(token => headerKeywords.test(token))) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function getPool() {
+      return poolInput.value
+        .split('\n')
+        .map(line => line.replace(/\t+/g, ' ').trim())
+        .filter(line => line.length > 0 && !isHeaderRow(line));
+    }
+
+    function updatePoolBadge() {
+      poolCount.textContent = getPool().length;
+    }
+
+    poolInput.addEventListener('input', () => {
+      initialPoolSnapshot = poolInput.value;
+      updatePoolBadge();
+    });
+
+    restorePoolBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      const executeRestore = () => {
+        poolInput.value = initialPoolSnapshot;
+        priorityList = [...initialPrioritySnapshot];
+        excludedList = [...initialExcludedSnapshot];
+        updatePoolBadge();
+        results = [];
+        rollingDisplay.textContent = 'READY';
+        statusText.textContent = 'List restored. Click Draw to start';
+        renderLists();
+        showToast('Original candidate list restored.', '#16a34a');
+      };
+
+      if (results.length > 0 || poolInput.value !== initialPoolSnapshot) {
+        openConfirmModal(
+          'Restore Original Pool?',
+          'This will restore the initial candidate list and reset all drawn results.',
+          'Yes, Restore',
+          executeRestore
+        );
+      } else {
+        executeRestore();
+      }
+    });
+
+    clearPoolBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      if (poolInput.value.trim() === '') {
+        poolInput.value = '';
+        initialPoolSnapshot = '';
+        updatePoolBadge();
+        return;
+      }
+      openConfirmModal(
+        'Clear Candidate Pool?',
+        'This will empty the Candidate Pool completely to blank.',
+        'Yes, Clear All',
+        () => {
+          poolInput.value = '';
+          initialPoolSnapshot = '';
+          updatePoolBadge();
+          showToast('Candidate Pool cleared to blank.', '#dc2626');
+        }
+      );
+    });
+
+    function parseLines(text) {
+      return text
+        .split('\n')
+        .map(line => line.replace(/\t+/g, ' ').trim())
+        .filter(line => line.length > 0);
+    }
+
+    function updateAdminBadges() {
+      const pCount = parseLines(priorityInput.value).length;
+      const eCount = parseLines(excludedInput.value).length;
+      priorityBadge.textContent = `${pCount} ${pCount === 1 ? 'entry' : 'entries'}`;
+      excludedBadge.textContent = `${eCount} ${eCount === 1 ? 'entry' : 'entries'}`;
+    }
+
+    priorityInput.addEventListener('input', updateAdminBadges);
+    excludedInput.addEventListener('input', updateAdminBadges);
+
+    // Keyboard shortcuts (Alt+A / Option+A / Ctrl+Shift+H)
+    document.addEventListener('keydown', (e) => {
+      if ((e.altKey && (e.code === 'KeyA' || e.key === 'a' || e.key === 'A')) ||
+          (e.ctrlKey && e.shiftKey && (e.code === 'KeyH' || e.key === 'h' || e.key === 'H'))) {
+        e.preventDefault();
+        openAdminModal();
+      }
+    });
+
+    // Secret trigger 1: Click "SmartDraw" subtitle 5 times (each click within 1000ms)
+    let subtitleClickCount = 0;
+    let subtitleClickTimer = null;
+    secretSubtitle.addEventListener('click', () => {
+      subtitleClickCount++;
+      clearTimeout(subtitleClickTimer);
+      if (subtitleClickCount >= 5) {
+        subtitleClickCount = 0;
+        openAdminModal();
+      } else {
+        subtitleClickTimer = setTimeout(() => {
+          subtitleClickCount = 0;
+        }, 1000);
+      }
+    });
+
+    function openAdminModal() {
+      priorityInput.value = priorityList.join('\n');
+      excludedInput.value = excludedList.join('\n');
+      updateAdminBadges();
+      adminModal.style.display = 'flex';
+    }
+
+    saveAdminBtn.addEventListener('click', () => {
+      const rawExcluded = parseLines(excludedInput.value);
+      const rawPriority = parseLines(priorityInput.value);
+
+      excludedList = [...new Set(rawExcluded)];
+      priorityList = [...new Set(rawPriority)].filter(item => !excludedList.includes(item));
+
+      initialExcludedSnapshot = [...excludedList];
+      initialPrioritySnapshot = [...priorityList];
+
+      adminModal.style.display = 'none';
+      showToast(`Settings saved (Must Win: ${priorityList.length}, Excluded: ${excludedList.length}).`, '#16a34a');
+    });
+
+    closeAdminBtn.addEventListener('click', () => {
+      adminModal.style.display = 'none';
+    });
+
+    async function drawOneCandidate(type) {
+      let pool = getPool();
+      const currentEligible = pool.filter(c => !excludedList.includes(c));
+      if (currentEligible.length === 0) return false;
+
+      let chosenCandidate = null;
+      const availablePriorities = priorityList.filter(p => currentEligible.includes(p));
+
+      if (availablePriorities.length > 0) {
+        const randIdx = Math.floor(Math.random() * availablePriorities.length);
+        chosenCandidate = availablePriorities[randIdx];
+        priorityList = priorityList.filter(p => p !== chosenCandidate);
+      } else {
+        const randIdx = Math.floor(Math.random() * currentEligible.length);
+        chosenCandidate = currentEligible[randIdx];
+      }
+
+      await animateSlot(pool, chosenCandidate);
+
+      const removeIdx = pool.indexOf(chosenCandidate);
+      if (removeIdx > -1) {
+        pool.splice(removeIdx, 1);
+      }
+      poolInput.value = pool.join('\n');
+      updatePoolBadge();
+
+      const parsed = parseCandidate(chosenCandidate);
+      const typeCount = results.filter(r => r.type === type).length + 1;
+      const statusLabel = type === 'winner' ? `Winner #${typeCount}` : `Reserve #${typeCount}`;
+
+      results.push({
+        order: results.length + 1,
+        type: type,
+        typeOrder: typeCount,
+        statusLabel: statusLabel,
+        raw: chosenCandidate,
+        className: parsed.className,
+        classNo: parsed.classNo,
+        name: parsed.name
+      });
+
+      renderLists();
+      return true;
+    }
+
+    drawBtn.addEventListener('click', async () => {
+      if (isDrawing) return;
+
+      const pool = getPool();
+      const winnersToDraw = parseInt(drawCountInput.value, 10) || 0;
+      const reservesToDraw = parseInt(reserveCountInput.value, 10) || 0;
+      const totalToDraw = winnersToDraw + reservesToDraw;
+
+      if (pool.length === 0) {
+        showToast('The Candidate Pool is empty!', '#dc2626');
+        return;
+      }
+      if (winnersToDraw < 0 || reservesToDraw < 0 || totalToDraw <= 0) {
+        showToast('Please enter at least 1 for Capacity or Reserve List.', '#dc2626');
+        return;
+      }
+
+      const eligiblePool = pool.filter(c => !excludedList.includes(c));
+      if (eligiblePool.length === 0) {
+        showToast('No eligible candidates remaining in the pool.', '#dc2626');
+        return;
+      }
+      if (totalToDraw > eligiblePool.length) {
+        showToast(`Need ${totalToDraw} slots, but only ${eligiblePool.length} eligible candidates available.`, '#dc2626');
+        return;
+      }
+
+      isDrawing = true;
+      drawBtn.disabled = true;
+      resetBtn.disabled = true;
+      restorePoolBtn.disabled = true;
+      clearPoolBtn.disabled = true;
+      poolInput.disabled = true;
+
+      for (let i = 0; i < winnersToDraw; i++) {
+        statusText.textContent = `Drawing Winner ${i + 1} of ${winnersToDraw}...`;
+        statusText.style.color = '#86efac';
+        const ok = await drawOneCandidate('winner');
+        if (!ok) break;
+      }
+
+      for (let j = 0; j < reservesToDraw; j++) {
+        statusText.textContent = `Drawing Reserve ${j + 1} of ${reservesToDraw}...`;
+        statusText.style.color = '#fbbf24';
+        const ok = await drawOneCandidate('reserve');
+        if (!ok) break;
+      }
+
+      statusText.style.color = '#86efac';
+      if (reservesToDraw > 0) {
+        statusText.textContent = `Completed (${winnersToDraw} Winners, ${reservesToDraw} Reserves)`;
+      } else {
+        statusText.textContent = `Completed (${winnersToDraw} Winners drawn)`;
+      }
+
+      isDrawing = false;
+      drawBtn.disabled = false;
+      resetBtn.disabled = false;
+      restorePoolBtn.disabled = false;
+      clearPoolBtn.disabled = false;
+      poolInput.disabled = false;
+    });
+
+    function animateSlot(pool, finalWinner) {
+      return new Promise(resolve => {
+        let ticks = 0;
+        const maxTicks = 12;
+        const interval = setInterval(() => {
+          const randomShow = pool[Math.floor(Math.random() * pool.length)];
+          rollingDisplay.textContent = randomShow;
+          ticks++;
+          if (ticks >= maxTicks) {
+            clearInterval(interval);
+            rollingDisplay.textContent = finalWinner;
+            resolve();
+          }
+        }, 50);
+      });
+    }
+
+    function getSortedResults() {
+      let sorted = [...results];
+      if (currentSort === 'order') {
+        sorted.sort((a, b) => a.order - b.order);
+      } else if (currentSort === 'class') {
+        sorted.sort((a, b) => {
+          const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
+          if (classCmp !== 0) return classCmp;
+          return a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
+        });
+      } else if (currentSort === 'name') {
+        sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      }
+      return sorted;
+    }
+
+    function renderLists() {
+      drawnCount.textContent = results.length;
+      const sorted = getSortedResults();
+      sortedTableBody.innerHTML = '';
+
+      sorted.forEach(item => {
+        const tr = document.createElement('tr');
+        const statusClass = item.type === 'winner' ? 'td-status-win' : 'td-status-res';
+        tr.innerHTML = `
+          <td class="${statusClass}">${escapeHtml(item.statusLabel)}</td>
+          <td>${escapeHtml(item.className)}</td>
+          <td>${escapeHtml(item.classNo)}</td>
+          <td>${escapeHtml(item.name)}</td>
+        `;
+        sortedTableBody.appendChild(tr);
+      });
+
+      if (currentSort === 'order') {
+        tableWrapper.scrollTop = tableWrapper.scrollHeight;
+      }
+    }
+
+    sortBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sortBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
+        renderLists();
+      });
+    });
+
+    function copyTextToClipboard(text, btn, tempLabel, toastMsg) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        const origText = btn.textContent;
+        btn.textContent = tempLabel;
+        setTimeout(() => { btn.textContent = origText; }, 1500);
+        showToast(toastMsg, '#16a34a');
+      } catch (err) {
+        showToast('Failed to copy to clipboard.', '#dc2626');
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+
+    copyBtn.addEventListener('click', () => {
+      if (results.length === 0) {
+        showToast('No results to copy yet.', '#dc2626');
+        return;
+      }
+      const sorted = getSortedResults();
+      const listText = sorted.map(w => {
+        if (w.className !== '-' && w.classNo !== '-') {
+          const exportNo = formatNoForExport(w.classNo);
+          return w.name !== '-'
+            ? `${w.statusLabel}\t${w.className}\t${exportNo}\t${w.name}`
+            : `${w.statusLabel}\t${w.className}\t${exportNo}`;
+        }
+        return `${w.statusLabel}\t${w.raw}`;
+      }).join('\n');
+      copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
+    });
+
+    // Secret trigger 2: Click "Table for Excel" 10 times (each click within 1000ms)
+    let excelBtnClickCount = 0;
+    let excelBtnClickTimer = null;
+
+    copyExcelBtn.addEventListener('click', () => {
+      excelBtnClickCount++;
+      clearTimeout(excelBtnClickTimer);
+
+      if (excelBtnClickCount >= 10) {
+        excelBtnClickCount = 0;
+        openAdminModal();
+        return;
+      } else {
+        excelBtnClickTimer = setTimeout(() => {
+          excelBtnClickCount = 0;
+        }, 1000);
+      }
+
+      if (results.length === 0) {
+        if (excelBtnClickCount === 1) {
+          showToast('No results to copy yet.', '#dc2626');
+        }
+        return;
+      }
+
+      const sorted = getSortedResults();
+      const hasAnyName = sorted.some(w => w.name !== '-');
+
+      let header, rows;
+      if (hasAnyName) {
+        header = ['Status', 'Class', 'No.', 'Name'].join('\t');
+        rows = sorted.map(w => [
+          w.statusLabel,
+          w.className,
+          formatNoForExport(w.classNo),
+          w.name === '-' ? '' : w.name
+        ].join('\t'));
+      } else {
+        header = ['Status', 'Class', 'No.'].join('\t');
+        rows = sorted.map(w => [
+          w.statusLabel,
+          w.className,
+          formatNoForExport(w.classNo)
+        ].join('\t'));
+      }
+
+      const tsv = [header, ...rows].join('\n');
+      copyTextToClipboard(tsv, copyExcelBtn, 'Copied for Excel!', 'Table copied! Paste directly into Excel (Ctrl+V).');
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (isDrawing) return;
+      if (results.length === 0) return;
+      openConfirmModal(
+        'Reset Drawn Results?',
+        'This will clear all drawn winners and reserves from the results table while keeping the remaining Candidate Pool.',
+        'Yes, Clear',
+        () => {
+          results = [];
+          rollingDisplay.textContent = 'READY';
+          statusText.textContent = 'Click Draw to start';
+          statusText.style.color = '#86efac';
+          renderLists();
+          showToast('Drawn results cleared.', '#16a34a');
+        }
+      );
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    updatePoolBadge();
+  </script>
+</body>
+</html>
