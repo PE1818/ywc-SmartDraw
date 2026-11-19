@@ -403,7 +403,7 @@
         <span>3. Candidate Pool</span>
         <span class="badge" id="poolCount">0</span>
       </div>
-      <textarea id="poolInput" placeholder="Paste list here (unlimited rows, one per line)&#10;Example:&#10;1A 01 Chan Tai Man&#10;1A 02 Lee Siu Ming"></textarea>
+      <textarea id="poolInput" placeholder="Paste list here (unlimited rows, one per line)&#10;Example:&#10;1A 01&#10;1A 02&#10;1A 09"></textarea>
       <div class="table-actions">
         <button class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
         <button class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
@@ -446,10 +446,10 @@
     <div class="modal-box">
       <div class="modal-title">Admin Priority Settings</div>
       <div class="modal-desc">
-        Enter guaranteed winners below (one per line, matching names in the Candidate Pool).<br>
+        Enter guaranteed winners below (one per line, matching entries in the Candidate Pool).<br>
         If Draw Count exceeds this list, remaining slots will be drawn randomly from the rest of the pool.
       </div>
-      <textarea id="priorityInput" placeholder="Enter priority names here...&#10;e.g.&#10;1A 01 Chan Tai Man&#10;3C 03 Lam Ho Yin"></textarea>
+      <textarea id="priorityInput" placeholder="Enter priority entries here...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
       <div class="modal-actions">
         <button class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
         <button class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
@@ -542,14 +542,15 @@
       pendingConfirmAction = null;
     });
 
+    // 公開畫面顯示時，保留原始學號格式（例如 "09" 依然顯示 "09"，保護私隱且維持原始外觀）
     function parseCandidate(rawStr) {
       const cleaned = rawStr.replace(/\t+/g, ' ').trim();
-      const match = cleaned.match(/^([0-9]+[A-Za-z]+)\s*[-–]?\s*([0-9]+)\s+(.*)$/);
+      const match = cleaned.match(/^([0-9]+[A-Za-z]+)\s*[-–]?\s*([0-9]+)(?:\s+(.*))?$/);
       if (match) {
         return {
           className: match[1].toUpperCase(),
           classNo: match[2],
-          name: match[3].trim()
+          name: match[3] ? match[3].trim() : '-'
         };
       }
       return {
@@ -557,6 +558,14 @@
         classNo: '-',
         name: cleaned
       };
+    }
+
+    // 專用匯出轉換函式：僅在輸出 Table for Excel 及 Text List 時，把學號 01-09 轉為個位數 1-9
+    function formatNoForExport(classNo) {
+      if (/^0+[1-9]\d*$/.test(classNo) || /^\d+$/.test(classNo)) {
+        return String(parseInt(classNo, 10));
+      }
+      return classNo;
     }
 
     function isHeaderRow(line) {
@@ -826,19 +835,29 @@
       }
     }
 
+    // 1. Text List 輸出：僅在輸出時將 01-09 轉為個位數 1-9，並分成兩欄輸出
     copyBtn.addEventListener('click', () => {
       if (winners.length === 0) {
         showToast('No winners to copy yet.', '#dc2626');
         return;
       }
       const sorted = getSortedWinners();
-      const listText = sorted.map(w => w.raw).join('\n');
+      const listText = sorted.map(w => {
+        if (w.className !== '-' && w.classNo !== '-') {
+          const exportNo = formatNoForExport(w.classNo);
+          return w.name !== '-'
+            ? `${w.className}\t${exportNo}\t${w.name}`
+            : `${w.className}\t${exportNo}`;
+        }
+        return w.raw;
+      }).join('\n');
       copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
     });
 
     let excelBtnClickCount = 0;
     let excelBtnClickTimer = null;
 
+    // 2. Table for Excel 輸出：僅在輸出時將 01-09 轉為個位數 1-9，並以班別與學號兩個欄位輸出
     copyExcelBtn.addEventListener('click', () => {
       excelBtnClickCount++;
       clearTimeout(excelBtnClickTimer);
@@ -861,8 +880,25 @@
       }
 
       const sorted = getSortedWinners();
-      const header = ['Draw Order', 'Class', 'No.', 'Name'].join('\t');
-      const rows = sorted.map(w => [w.order, w.className, w.classNo, w.name].join('\t'));
+      const hasAnyName = sorted.some(w => w.name !== '-');
+
+      let header, rows;
+      if (hasAnyName) {
+        header = ['Class', 'No.', 'Name'].join('\t');
+        rows = sorted.map(w => [
+          w.className,
+          formatNoForExport(w.classNo),
+          w.name === '-' ? '' : w.name
+        ].join('\t'));
+      } else {
+        // 僅班別與學號時，在 Excel 中以「Class」和「No.」兩個欄位輸出，且 01-09 變回個位數
+        header = ['Class', 'No.'].join('\t');
+        rows = sorted.map(w => [
+          w.className,
+          formatNoForExport(w.classNo)
+        ].join('\t'));
+      }
+
       const tsv = [header, ...rows].join('\n');
       copyTextToClipboard(tsv, copyExcelBtn, 'Copied for Excel!', 'Table copied! Paste directly into Excel (Ctrl+V).');
     });
