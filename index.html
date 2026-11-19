@@ -46,6 +46,7 @@
       display: inline-block;
       font-weight: 800;
       cursor: default;
+      user-select: none;
     }
 
     /* Unified Symmetrical 2x2 Grid Layout */
@@ -140,6 +141,7 @@
       border-radius: 0.65rem;
       cursor: pointer;
       transition: all 0.2s;
+      user-select: none;
     }
     .btn:disabled {
       opacity: 0.5;
@@ -436,20 +438,20 @@
     .tag-win {
       background: #22c55e;
       color: #052e16;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 800;
-      padding: 0.2rem 0.55rem;
+      padding: 0.22rem 0.65rem;
       border-radius: 0.35rem;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
     .tag-lose {
       background: #ef4444;
       color: #ffffff;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 800;
-      padding: 0.2rem 0.55rem;
+      padding: 0.22rem 0.65rem;
       border-radius: 0.35rem;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
     .admin-textarea-win {
       height: 340px;
@@ -541,10 +543,10 @@
       </div>
     </section>
 
-    <!-- BOTTOM-RIGHT: 4. Unified Winners & Reserve Results Table -->
+    <!-- BOTTOM-RIGHT: 4. Selection Results -->
     <section class="panel panel-bottom">
       <div class="panel-header">
-        <span>4. Winners &amp; Reserve Results</span>
+        <span>4. Selection Results</span>
         <span class="badge" id="drawnCount">0</span>
       </div>
       <div class="sort-controls">
@@ -577,30 +579,24 @@
     <div class="modal-box">
       <div class="modal-title">Admin Allocation Settings</div>
       <div class="modal-desc">
-        Configure guaranteed winners or excluded candidates below (one per line, exact match with Candidate Pool).<br>
-        <span style="color: #fca5a5;">* <strong>Excluded (Cannot Win)</strong> blocks entries from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
+        Configure guaranteed or excluded candidates below (one per line, exact match with Candidate Pool).<br>
+        <span style="color: #fca5a5;">* <strong>Excluded</strong> entries are blocked from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
       </div>
 
       <div class="admin-grid">
-        <!-- LEFT: Guaranteed Winners (GREEN) -->
+        <!-- LEFT: Guaranteed (GREEN) -->
         <div class="admin-card-win">
           <div class="admin-card-header">
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <span class="tag-win">✓ MUST WIN</span>
-              <span style="font-weight:700; color:#4ade80; font-size:0.95rem;">Guaranteed</span>
-            </div>
+            <span class="tag-win">✓ GUARANTEED</span>
             <span id="priorityBadge" style="font-size:0.8rem; color:#86efac; font-weight:600;">0 entries</span>
           </div>
           <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
         </div>
 
-        <!-- RIGHT: Excluded / Cannot Win (RED) -->
+        <!-- RIGHT: Excluded (RED) -->
         <div class="admin-card-lose">
           <div class="admin-card-header">
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <span class="tag-lose">✕ CANNOT WIN</span>
-              <span style="font-weight:700; color:#f87171; font-size:0.95rem;">Excluded</span>
-            </div>
+            <span class="tag-lose">✕ EXCLUDED</span>
             <span id="excludedBadge" style="font-size:0.8rem; color:#fca5a5; font-weight:600;">0 entries</span>
           </div>
           <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
@@ -839,19 +835,22 @@
       }
     });
 
-    // Secret trigger 1: Click "SmartDraw" subtitle 5 times (each click within 1000ms)
-    let subtitleClickCount = 0;
-    let subtitleClickTimer = null;
-    secretSubtitle.addEventListener('click', () => {
-      subtitleClickCount++;
-      clearTimeout(subtitleClickTimer);
-      if (subtitleClickCount >= 5) {
-        subtitleClickCount = 0;
-        openAdminModal();
+    // Secret trigger 1: Tap/Click "SmartDraw" subtitle 5 times (each within 1000ms)
+    let subtitleTapCount = 0;
+    let subtitleLastTap = 0;
+    secretSubtitle.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - subtitleLastTap <= 1000) {
+        subtitleTapCount++;
       } else {
-        subtitleClickTimer = setTimeout(() => {
-          subtitleClickCount = 0;
-        }, 1000);
+        subtitleTapCount = 1;
+      }
+      subtitleLastTap = now;
+
+      if (subtitleTapCount >= 5) {
+        subtitleTapCount = 0;
+        openAdminModal();
       }
     });
 
@@ -873,7 +872,7 @@
       initialPrioritySnapshot = [...priorityList];
 
       adminModal.style.display = 'none';
-      showToast(`Settings saved (Must Win: ${priorityList.length}, Excluded: ${excludedList.length}).`, '#16a34a');
+      showToast(`Settings saved (Guaranteed: ${priorityList.length}, Excluded: ${excludedList.length}).`, '#16a34a');
     });
 
     closeAdminBtn.addEventListener('click', () => {
@@ -1090,28 +1089,30 @@
       copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
     });
 
-    // Secret trigger 2: Click "Table for Excel" 10 times (each click within 1000ms)
-    let excelBtnClickCount = 0;
-    let excelBtnClickTimer = null;
+    // Secret trigger 2: Reliable 10-tap detection on "Table for Excel" using pointerdown (1000ms gap)
+    let excelTapCount = 0;
+    let excelLastTap = 0;
+
+    copyExcelBtn.addEventListener('pointerdown', () => {
+      const now = Date.now();
+      if (now - excelLastTap <= 1000) {
+        excelTapCount++;
+      } else {
+        excelTapCount = 1;
+      }
+      excelLastTap = now;
+
+      if (excelTapCount >= 10) {
+        excelTapCount = 0;
+        openAdminModal();
+      }
+    });
 
     copyExcelBtn.addEventListener('click', () => {
-      excelBtnClickCount++;
-      clearTimeout(excelBtnClickTimer);
-
-      if (excelBtnClickCount >= 10) {
-        excelBtnClickCount = 0;
-        openAdminModal();
-        return;
-      } else {
-        excelBtnClickTimer = setTimeout(() => {
-          excelBtnClickCount = 0;
-        }, 1000);
-      }
+      if (excelTapCount > 1) return;
 
       if (results.length === 0) {
-        if (excelBtnClickCount === 1) {
-          showToast('No results to copy yet.', '#dc2626');
-        }
+        showToast('No results to copy yet.', '#dc2626');
         return;
       }
 
