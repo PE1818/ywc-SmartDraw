@@ -6,7 +6,7 @@
   <title>Ying Wa College - SmartDraw</title>
   <!-- Load Tailwind CSS & Inter Font -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -71,7 +71,7 @@
       flex-direction: column;
     }
     .panel-top {
-      min-height: 210px;
+      min-height: 220px;
     }
     .panel-bottom {
       height: 55vh;
@@ -178,35 +178,67 @@
       color: #fca5a5;
     }
 
-    /* Panel 2: Draw Count */
-    .qty-wrapper {
+    /* Panel 2: Draw & Reserve Count */
+    .qty-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      align-items: center;
+    }
+    .qty-box {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      flex: 1;
-      gap: 0.9rem;
+      justify-content: center;
+      background: #050a07;
+      border: 1px solid #163022;
+      border-radius: 0.75rem;
+      padding: 0.85rem 0.75rem;
+      height: 100%;
+    }
+    .qty-label-win {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4ade80;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .qty-label-res {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 0.5rem;
+      text-align: center;
     }
     .qty-input {
       width: 100%;
-      max-width: 240px;
-      font-size: 2.5rem;
+      max-width: 160px;
+      font-size: 2.15rem;
       font-weight: 700;
       text-align: center;
-      padding: 0.65rem;
-      border-radius: 0.75rem;
+      padding: 0.45rem;
+      border-radius: 0.65rem;
       border: 2px solid #166534;
-      background: #050a07;
+      background: #0d1712;
       color: #22c55e;
     }
     .qty-input:focus {
       outline: none;
       border-color: #4ade80;
     }
+    .qty-input-reserve {
+      border-color: #92400e;
+      color: #fbbf24;
+    }
+    .qty-input-reserve:focus {
+      border-color: #f59e0b;
+    }
     .helper-text {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #9ca3af;
       text-align: center;
+      margin-top: 0.65rem;
       line-height: 1.4;
     }
 
@@ -290,10 +322,15 @@
     tbody tr:hover {
       background: #0d1712;
     }
-    .td-order {
-      text-align: center;
-      color: #22c55e;
+    .td-status-win {
+      color: #4ade80;
       font-weight: 700;
+      white-space: nowrap;
+    }
+    .td-status-res {
+      color: #fbbf24;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     /* Custom Toast Notification */
@@ -320,17 +357,18 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.82);
+      background: rgba(0, 0, 0, 0.85);
       justify-content: center;
       align-items: center;
       z-index: 1000;
+      padding: 1rem;
     }
     .modal-box {
       background: #0d1712;
       padding: 1.75rem;
       border-radius: 1rem;
-      width: 90%;
-      max-width: 480px;
+      width: 95%;
+      max-width: 780px;
       border: 2px solid #22c55e;
       box-shadow: 0 20px 35px rgba(0, 0, 0, 0.75);
     }
@@ -338,21 +376,91 @@
       font-size: 1.25rem;
       font-weight: 700;
       color: #22c55e;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
     .modal-desc {
       font-size: 0.85rem;
       color: #9ca3af;
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
       line-height: 1.5;
-    }
-    .modal-box textarea {
-      height: 180px;
-      margin-bottom: 1rem;
     }
     .modal-actions {
       display: flex;
       gap: 0.75rem;
+      margin-top: 1.1rem;
+    }
+
+    /* High-Contrast Admin Dual Cards */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .admin-card-win {
+      background: rgba(6, 78, 59, 0.25);
+      border: 2px solid #22c55e;
+      border-radius: 0.75rem;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-lose {
+      background: rgba(127, 29, 29, 0.25);
+      border: 2px solid #ef4444;
+      border-radius: 0.75rem;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+      gap: 0.5rem;
+    }
+    .tag-win {
+      background: #22c55e;
+      color: #052e16;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.35rem;
+      letter-spacing: 0.5px;
+    }
+    .tag-lose {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.35rem;
+      letter-spacing: 0.5px;
+    }
+    .admin-textarea-win {
+      height: 185px;
+      background: #040906;
+      border: 1px solid #166534;
+      color: #dcfce7;
+    }
+    .admin-textarea-win:focus {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25);
+    }
+    .admin-textarea-lose {
+      height: 185px;
+      background: #0c0505;
+      border: 1px solid #991b1b;
+      color: #fee2e2;
+    }
+    .admin-textarea-lose:focus {
+      border-color: #f87171;
+      box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.25);
     }
   </style>
 </head>
@@ -379,21 +487,27 @@
       </div>
       <div class="machine-actions">
         <button class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
-        <button class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Winners</button>
+        <button class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
       </div>
     </section>
 
-    <!-- TOP-RIGHT: 2. Draw Count -->
+    <!-- TOP-RIGHT: 2. Draw & Reserve Count -->
     <section class="panel panel-top">
       <div class="panel-header">
-        <span>2. Draw Count</span>
+        <span>2. Selection Quota</span>
       </div>
-      <div class="qty-wrapper">
-        <label for="drawCount" class="helper-text">Number of winners to select:</label>
-        <input type="number" id="drawCount" class="qty-input" value="3" min="1">
-        <div class="helper-text">
-          Enter how many participants to draw in this round.
+      <div class="qty-grid">
+        <div class="qty-box">
+          <label for="drawCount" class="qty-label-win">Winners (正取人數)</label>
+          <input type="number" id="drawCount" class="qty-input" value="3" min="0">
         </div>
+        <div class="qty-box">
+          <label for="reserveCount" class="qty-label-res">Reserve List (後補人數)</label>
+          <input type="number" id="reserveCount" class="qty-input qty-input-reserve" value="0" min="0">
+        </div>
+      </div>
+      <div class="helper-text">
+        Winners are drawn first, followed immediately by the Reserve List.
       </div>
     </section>
 
@@ -410,10 +524,10 @@
       </div>
     </section>
 
-    <!-- BOTTOM-RIGHT: 4. Unified Winners & Results Table -->
+    <!-- BOTTOM-RIGHT: 4. Unified Winners & Reserve Results Table -->
     <section class="panel panel-bottom">
       <div class="panel-header">
-        <span>4. Winners &amp; Results</span>
+        <span>4. Winners &amp; Reserve Results</span>
         <span class="badge" id="drawnCount">0</span>
       </div>
       <div class="sort-controls">
@@ -425,9 +539,9 @@
         <table id="sortedTable">
           <thead>
             <tr>
-              <th style="text-align:center; width: 76px;">Draw #</th>
-              <th style="width: 85px;">Class</th>
-              <th style="width: 70px;">No.</th>
+              <th style="width: 115px;">Status</th>
+              <th style="width: 80px;">Class</th>
+              <th style="width: 65px;">No.</th>
               <th>Name</th>
             </tr>
           </thead>
@@ -441,15 +555,41 @@
     </section>
   </main>
 
-  <!-- Hidden Admin Priority Modal -->
+  <!-- Hidden Admin Settings Modal (Guaranteed vs Excluded) -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-box">
-      <div class="modal-title">Admin Priority Settings</div>
+      <div class="modal-title">Admin Allocation Settings</div>
       <div class="modal-desc">
-        Enter guaranteed winners below (one per line, matching entries in the Candidate Pool).<br>
-        If Draw Count exceeds this list, remaining slots will be drawn randomly from the rest of the pool.
+        Configure guaranteed winners or excluded candidates below (one per line, exact match with Candidate Pool).<br>
+        <span style="color: #fca5a5;">* <strong>Excluded (Cannot Win)</strong> blocks entries from both <strong>Winners</strong> and the <strong>Reserve List</strong>.</span>
       </div>
-      <textarea id="priorityInput" placeholder="Enter priority entries here...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
+
+      <div class="admin-grid">
+        <!-- LEFT: Guaranteed Winners (GREEN) -->
+        <div class="admin-card-win">
+          <div class="admin-card-header">
+            <div style="display:flex; align-items:center; gap:0.45rem;">
+              <span class="tag-win">✓ MUST WIN</span>
+              <span style="font-weight:700; color:#4ade80; font-size:0.92rem;">Guaranteed</span>
+            </div>
+            <span id="priorityBadge" style="font-size:0.75rem; color:#86efac; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="priorityInput" class="admin-textarea-win" placeholder="Guaranteed winners (必中名單)...&#10;e.g.&#10;1A 01&#10;3C 03"></textarea>
+        </div>
+
+        <!-- RIGHT: Excluded / Cannot Win (RED) -->
+        <div class="admin-card-lose">
+          <div class="admin-card-header">
+            <div style="display:flex; align-items:center; gap:0.45rem;">
+              <span class="tag-lose">✕ CANNOT WIN</span>
+              <span style="font-weight:700; color:#f87171; font-size:0.92rem;">Excluded</span>
+            </div>
+            <span id="excludedBadge" style="font-size:0.75rem; color:#fca5a5; font-weight:600;">0 entries</span>
+          </div>
+          <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Cannot win / Reserve (不能中籤及後補名單)...&#10;e.g.&#10;2B 14&#10;4D 08"></textarea>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn btn-draw" id="saveAdminBtn" style="margin:0;">Save &amp; Close</button>
         <button class="btn btn-secondary" id="closeAdminBtn" style="margin:0;">Cancel</button>
@@ -462,7 +602,7 @@
     <div class="modal-box" style="max-width: 390px;">
       <div class="modal-title" id="confirmTitle" style="color: #dc2626;">Reset Drawn Results?</div>
       <div class="modal-desc" id="confirmDesc">
-        This will clear all drawn winners from the results table.
+        This will clear all drawn winners and reserves from the results table.
       </div>
       <div class="modal-actions">
         <button class="btn btn-reset" id="confirmYesBtn" style="margin:0;">Yes, Proceed</button>
@@ -475,6 +615,7 @@
     const poolInput = document.getElementById('poolInput');
     const poolCount = document.getElementById('poolCount');
     const drawCountInput = document.getElementById('drawCount');
+    const reserveCountInput = document.getElementById('reserveCount');
     const drawBtn = document.getElementById('drawBtn');
     const resetBtn = document.getElementById('resetBtn');
     const restorePoolBtn = document.getElementById('restorePoolBtn');
@@ -492,6 +633,9 @@
     // Hidden Admin Modal Elements
     const adminModal = document.getElementById('adminModal');
     const priorityInput = document.getElementById('priorityInput');
+    const excludedInput = document.getElementById('excludedInput');
+    const priorityBadge = document.getElementById('priorityBadge');
+    const excludedBadge = document.getElementById('excludedBadge');
     const saveAdminBtn = document.getElementById('saveAdminBtn');
     const closeAdminBtn = document.getElementById('closeAdminBtn');
 
@@ -502,9 +646,12 @@
     const confirmYesBtn = document.getElementById('confirmYesBtn');
     const confirmNoBtn = document.getElementById('confirmNoBtn');
 
-    let winners = [];
+    // Stores both winners (type: 'winner') and reserves (type: 'reserve')
+    let results = [];
     let priorityList = [];
+    let excludedList = [];
     let initialPrioritySnapshot = [];
+    let initialExcludedSnapshot = [];
     let initialPoolSnapshot = poolInput.value;
     let currentSort = 'order';
     let isDrawing = false;
@@ -542,7 +689,6 @@
       pendingConfirmAction = null;
     });
 
-    // 公開畫面顯示時，保留原始學號格式（例如 "09" 依然顯示 "09"，保護私隱且維持原始外觀）
     function parseCandidate(rawStr) {
       const cleaned = rawStr.replace(/\t+/g, ' ').trim();
       const match = cleaned.match(/^([0-9]+[A-Za-z]+)\s*[-–]?\s*([0-9]+)(?:\s+(.*))?$/);
@@ -560,7 +706,6 @@
       };
     }
 
-    // 專用匯出轉換函式：僅在輸出 Table for Excel 及 Text List 時，把學號 01-09 轉為個位數 1-9
     function formatNoForExport(classNo) {
       if (/^0+[1-9]\d*$/.test(classNo) || /^\d+$/.test(classNo)) {
         return String(parseInt(classNo, 10));
@@ -610,18 +755,19 @@
       const executeRestore = () => {
         poolInput.value = initialPoolSnapshot;
         priorityList = [...initialPrioritySnapshot];
+        excludedList = [...initialExcludedSnapshot];
         updatePoolBadge();
-        winners = [];
+        results = [];
         rollingDisplay.textContent = 'READY';
         statusText.textContent = 'List restored. Click Draw to start';
         renderLists();
         showToast('Original candidate list restored.', '#16a34a');
       };
 
-      if (winners.length > 0 || poolInput.value !== initialPoolSnapshot) {
+      if (results.length > 0 || poolInput.value !== initialPoolSnapshot) {
         openConfirmModal(
           'Restore Original Pool?',
-          'This will restore the initial candidate list and reset all drawn winners.',
+          'This will restore the initial candidate list and reset all drawn results.',
           'Yes, Restore',
           executeRestore
         );
@@ -651,6 +797,23 @@
       );
     });
 
+    function parseLines(text) {
+      return text
+        .split('\n')
+        .map(line => line.replace(/\t+/g, ' ').trim())
+        .filter(line => line.length > 0);
+    }
+
+    function updateAdminBadges() {
+      const pCount = parseLines(priorityInput.value).length;
+      const eCount = parseLines(excludedInput.value).length;
+      priorityBadge.textContent = `${pCount} ${pCount === 1 ? 'entry' : 'entries'}`;
+      excludedBadge.textContent = `${eCount} ${eCount === 1 ? 'entry' : 'entries'}`;
+    }
+
+    priorityInput.addEventListener('input', updateAdminBadges);
+    excludedInput.addEventListener('input', updateAdminBadges);
+
     document.addEventListener('keydown', (e) => {
       if ((e.altKey && (e.key === 'A' || e.key === 'a')) ||
           (e.ctrlKey && e.shiftKey && (e.key === 'H' || e.key === 'h'))) {
@@ -661,39 +824,102 @@
 
     function openAdminModal() {
       priorityInput.value = priorityList.join('\n');
+      excludedInput.value = excludedList.join('\n');
+      updateAdminBadges();
       adminModal.style.display = 'flex';
     }
 
     saveAdminBtn.addEventListener('click', () => {
-      priorityList = priorityInput.value
-        .split('\n')
-        .map(line => line.replace(/\t+/g, ' ').trim())
-        .filter(line => line.length > 0);
+      const rawExcluded = parseLines(excludedInput.value);
+      const rawPriority = parseLines(priorityInput.value);
+
+      excludedList = [...new Set(rawExcluded)];
+      // Excluded list takes priority over Must Win list
+      priorityList = [...new Set(rawPriority)].filter(item => !excludedList.includes(item));
+
+      initialExcludedSnapshot = [...excludedList];
       initialPrioritySnapshot = [...priorityList];
+
       adminModal.style.display = 'none';
-      showToast(`Priority list saved (${priorityList.length} entries).`, '#16a34a');
+      showToast(`Settings saved (Must Win: ${priorityList.length}, Excluded: ${excludedList.length}).`, '#16a34a');
     });
 
     closeAdminBtn.addEventListener('click', () => {
       adminModal.style.display = 'none';
     });
 
+    // Single draw execution helper
+    async function drawOneCandidate(type) {
+      let pool = getPool();
+      // Filter out excluded candidates so they NEVER appear in Winners OR Reserve List
+      const currentEligible = pool.filter(c => !excludedList.includes(c));
+      if (currentEligible.length === 0) return false;
+
+      let chosenCandidate = null;
+      const availablePriorities = priorityList.filter(p => currentEligible.includes(p));
+
+      if (availablePriorities.length > 0) {
+        const randIdx = Math.floor(Math.random() * availablePriorities.length);
+        chosenCandidate = availablePriorities[randIdx];
+        priorityList = priorityList.filter(p => p !== chosenCandidate);
+      } else {
+        const randIdx = Math.floor(Math.random() * currentEligible.length);
+        chosenCandidate = currentEligible[randIdx];
+      }
+
+      await animateSlot(pool, chosenCandidate);
+
+      const removeIdx = pool.indexOf(chosenCandidate);
+      if (removeIdx > -1) {
+        pool.splice(removeIdx, 1);
+      }
+      poolInput.value = pool.join('\n');
+      updatePoolBadge();
+
+      const parsed = parseCandidate(chosenCandidate);
+      const typeCount = results.filter(r => r.type === type).length + 1;
+      const statusLabel = type === 'winner' ? `Winner #${typeCount}` : `Reserve #${typeCount}`;
+
+      results.push({
+        order: results.length + 1,
+        type: type,
+        typeOrder: typeCount,
+        statusLabel: statusLabel,
+        raw: chosenCandidate,
+        className: parsed.className,
+        classNo: parsed.classNo,
+        name: parsed.name
+      });
+
+      renderLists();
+      return true;
+    }
+
     drawBtn.addEventListener('click', async () => {
       if (isDrawing) return;
 
-      let pool = getPool();
-      const countToDraw = parseInt(drawCountInput.value, 10);
+      const pool = getPool();
+      const winnersToDraw = parseInt(drawCountInput.value, 10) || 0;
+      const reservesToDraw = parseInt(reserveCountInput.value, 10) || 0;
+      const totalToDraw = winnersToDraw + reservesToDraw;
 
       if (pool.length === 0) {
         showToast('The Candidate Pool is empty!', '#dc2626');
         return;
       }
-      if (isNaN(countToDraw) || countToDraw <= 0) {
-        showToast('Please enter a valid number greater than 0.', '#dc2626');
+      if (winnersToDraw < 0 || reservesToDraw < 0 || totalToDraw <= 0) {
+        showToast('Please enter at least 1 Winner or Reserve to draw.', '#dc2626');
         return;
       }
-      if (countToDraw > pool.length) {
-        showToast(`Only ${pool.length} candidates remaining in the pool.`, '#dc2626');
+
+      // Check eligible candidates (excluding those in excludedList)
+      const eligiblePool = pool.filter(c => !excludedList.includes(c));
+      if (eligiblePool.length === 0) {
+        showToast('No eligible candidates remaining in the pool.', '#dc2626');
+        return;
+      }
+      if (totalToDraw > eligiblePool.length) {
+        showToast(`Need ${totalToDraw} slots, but only ${eligiblePool.length} eligible candidates available.`, '#dc2626');
         return;
       }
 
@@ -704,46 +930,29 @@
       clearPoolBtn.disabled = true;
       poolInput.disabled = true;
 
-      for (let i = 0; i < countToDraw; i++) {
-        pool = getPool();
-        if (pool.length === 0) break;
-
-        statusText.textContent = `Drawing ${i + 1} of ${countToDraw}...`;
-
-        let chosenCandidate = null;
-        const availablePriorities = priorityList.filter(p => pool.includes(p));
-
-        if (availablePriorities.length > 0) {
-          const randIdx = Math.floor(Math.random() * availablePriorities.length);
-          chosenCandidate = availablePriorities[randIdx];
-          priorityList = priorityList.filter(p => p !== chosenCandidate);
-        } else {
-          const randIdx = Math.floor(Math.random() * pool.length);
-          chosenCandidate = pool[randIdx];
-        }
-
-        await animateSlot(pool, chosenCandidate);
-
-        const removeIdx = pool.indexOf(chosenCandidate);
-        if (removeIdx > -1) {
-          pool.splice(removeIdx, 1);
-        }
-        poolInput.value = pool.join('\n');
-        updatePoolBadge();
-
-        const parsed = parseCandidate(chosenCandidate);
-        winners.push({
-          order: winners.length + 1,
-          raw: chosenCandidate,
-          className: parsed.className,
-          classNo: parsed.classNo,
-          name: parsed.name
-        });
-
-        renderLists();
+      // 1. Draw Main Winners
+      for (let i = 0; i < winnersToDraw; i++) {
+        statusText.textContent = `Drawing Winner ${i + 1} of ${winnersToDraw}...`;
+        statusText.style.color = '#86efac';
+        const ok = await drawOneCandidate('winner');
+        if (!ok) break;
       }
 
-      statusText.textContent = `Completed (${countToDraw} drawn)`;
+      // 2. Draw Reserve List
+      for (let j = 0; j < reservesToDraw; j++) {
+        statusText.textContent = `Drawing Reserve ${j + 1} of ${reservesToDraw}...`;
+        statusText.style.color = '#fbbf24';
+        const ok = await drawOneCandidate('reserve');
+        if (!ok) break;
+      }
+
+      statusText.style.color = '#86efac';
+      if (reservesToDraw > 0) {
+        statusText.textContent = `Completed (${winnersToDraw} Winners, ${reservesToDraw} Reserves)`;
+      } else {
+        statusText.textContent = `Completed (${winnersToDraw} Winners drawn)`;
+      }
+
       isDrawing = false;
       drawBtn.disabled = false;
       resetBtn.disabled = false;
@@ -769,8 +978,8 @@
       });
     }
 
-    function getSortedWinners() {
-      let sorted = [...winners];
+    function getSortedResults() {
+      let sorted = [...results];
       if (currentSort === 'order') {
         sorted.sort((a, b) => a.order - b.order);
       } else if (currentSort === 'class') {
@@ -786,14 +995,15 @@
     }
 
     function renderLists() {
-      drawnCount.textContent = winners.length;
-      const sorted = getSortedWinners();
+      drawnCount.textContent = results.length;
+      const sorted = getSortedResults();
       sortedTableBody.innerHTML = '';
 
       sorted.forEach(item => {
         const tr = document.createElement('tr');
+        const statusClass = item.type === 'winner' ? 'td-status-win' : 'td-status-res';
         tr.innerHTML = `
-          <td class="td-order">#${item.order}</td>
+          <td class="${statusClass}">${escapeHtml(item.statusLabel)}</td>
           <td>${escapeHtml(item.className)}</td>
           <td>${escapeHtml(item.classNo)}</td>
           <td>${escapeHtml(item.name)}</td>
@@ -835,21 +1045,20 @@
       }
     }
 
-    // 1. Text List 輸出：僅在輸出時將 01-09 轉為個位數 1-9，並分成兩欄輸出
     copyBtn.addEventListener('click', () => {
-      if (winners.length === 0) {
-        showToast('No winners to copy yet.', '#dc2626');
+      if (results.length === 0) {
+        showToast('No results to copy yet.', '#dc2626');
         return;
       }
-      const sorted = getSortedWinners();
+      const sorted = getSortedResults();
       const listText = sorted.map(w => {
         if (w.className !== '-' && w.classNo !== '-') {
           const exportNo = formatNoForExport(w.classNo);
           return w.name !== '-'
-            ? `${w.className}\t${exportNo}\t${w.name}`
-            : `${w.className}\t${exportNo}`;
+            ? `${w.statusLabel}\t${w.className}\t${exportNo}\t${w.name}`
+            : `${w.statusLabel}\t${w.className}\t${exportNo}`;
         }
-        return w.raw;
+        return `${w.statusLabel}\t${w.raw}`;
       }).join('\n');
       copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
     });
@@ -857,7 +1066,7 @@
     let excelBtnClickCount = 0;
     let excelBtnClickTimer = null;
 
-    // 2. Table for Excel 輸出：僅在輸出時將 01-09 轉為個位數 1-9，並以班別與學號兩個欄位輸出
+    // 連按 10 下 Table for Excel 開啟隱藏管理面板
     copyExcelBtn.addEventListener('click', () => {
       excelBtnClickCount++;
       clearTimeout(excelBtnClickTimer);
@@ -872,28 +1081,29 @@
         }, 2500);
       }
 
-      if (winners.length === 0) {
+      if (results.length === 0) {
         if (excelBtnClickCount === 1) {
           showToast('No results to copy yet.', '#dc2626');
         }
         return;
       }
 
-      const sorted = getSortedWinners();
+      const sorted = getSortedResults();
       const hasAnyName = sorted.some(w => w.name !== '-');
 
       let header, rows;
       if (hasAnyName) {
-        header = ['Class', 'No.', 'Name'].join('\t');
+        header = ['Status', 'Class', 'No.', 'Name'].join('\t');
         rows = sorted.map(w => [
+          w.statusLabel,
           w.className,
           formatNoForExport(w.classNo),
           w.name === '-' ? '' : w.name
         ].join('\t'));
       } else {
-        // 僅班別與學號時，在 Excel 中以「Class」和「No.」兩個欄位輸出，且 01-09 變回個位數
-        header = ['Class', 'No.'].join('\t');
+        header = ['Status', 'Class', 'No.'].join('\t');
         rows = sorted.map(w => [
+          w.statusLabel,
           w.className,
           formatNoForExport(w.classNo)
         ].join('\t'));
@@ -905,17 +1115,18 @@
 
     resetBtn.addEventListener('click', () => {
       if (isDrawing) return;
-      if (winners.length === 0) return;
+      if (results.length === 0) return;
       openConfirmModal(
-        'Reset Drawn Winners?',
-        'This will clear all drawn winners from the results table while keeping the remaining Candidate Pool.',
+        'Reset Drawn Results?',
+        'This will clear all drawn winners and reserves from the results table while keeping the remaining Candidate Pool.',
         'Yes, Clear',
         () => {
-          winners = [];
+          results = [];
           rollingDisplay.textContent = 'READY';
           statusText.textContent = 'Click Draw to start';
+          statusText.style.color = '#86efac';
           renderLists();
-          showToast('Drawn winners cleared.', '#16a34a');
+          showToast('Drawn results cleared.', '#16a34a');
         }
       );
     });
