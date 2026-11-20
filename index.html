@@ -586,7 +586,7 @@
     <div class="modal-box">
       <div class="modal-title">Admin Allocation Settings</div>
       <div class="modal-desc">
-        Configure guaranteed or excluded candidates below (one per line, header rows are auto-ignored).<br>
+        Configure guaranteed or excluded candidates below (one per line; supports Class+No. like <code>1A 01</code>, <code>1A 1</code>, or full rows).<br>
         <span style="color: #fca5a5;">* <strong>Excluded</strong> entries are blocked from both <strong>Capacity</strong> and the <strong>Reserve List</strong>.</span>
       </div>
 
@@ -715,7 +715,7 @@
         clearTimeout(toastTimer);
         toastTimer = setTimeout(function() {
           toastBanner.style.display = 'none';
-        }, 2800);
+        }, 3200);
       }
 
       function openConfirmModal(title, desc, yesText, onConfirm) {
@@ -757,7 +757,7 @@
         }
 
         if (formDigits.length > 0 && classLetters.length > 0) {
-          while (idx < len && (cleaned[idx] === ' ' || cleaned[idx] === '-' || cleaned[idx] === '–')) {
+          while (idx < len && (cleaned[idx] === ' ' || cleaned[idx] === '-' || cleaned[idx] === '–' || cleaned[idx] === '—')) {
             idx++;
           }
           let noDigits = '';
@@ -780,6 +780,42 @@
           classNo: '-',
           name: cleaned
         };
+      }
+
+      // Smart candidate matching: handles case differences, leading zeros (01 vs 1), hyphens (1A-01 vs 1A 01),
+      // and Class+No. shorthand matching against full pool rows (e.g., "1A 01" matches "1A 01 Chan Tai Man")
+      function isSameCandidate(poolEntry, adminEntry) {
+        const pNorm = normalizeLineSpaces(poolEntry).toLowerCase();
+        const aNorm = normalizeLineSpaces(adminEntry).toLowerCase();
+        if (!pNorm || !aNorm) return false;
+        if (pNorm === aNorm) return true;
+
+        const pParsed = parseCandidate(poolEntry);
+        const aParsed = parseCandidate(adminEntry);
+
+        if (pParsed.className !== '-' && pParsed.classNo !== '-' &&
+            aParsed.className !== '-' && aParsed.classNo !== '-') {
+          const sameClass = pParsed.className === aParsed.className;
+          const sameNo = parseInt(pParsed.classNo, 10) === parseInt(aParsed.classNo, 10);
+          if (sameClass && sameNo) {
+            // If admin entry only specified Class + No. (no name), match any student with that Class + No.
+            if (aParsed.name === '-' || pParsed.name === '-') {
+              return true;
+            }
+            return pParsed.name.toLowerCase() === aParsed.name.toLowerCase();
+          }
+        }
+
+        return false;
+      }
+
+      function matchesAnyRule(poolEntry, ruleList) {
+        for (let i = 0; i < ruleList.length; i++) {
+          if (isSameCandidate(poolEntry, ruleList[i])) {
+            return true;
+          }
+        }
+        return false;
       }
 
       function formatNoForExport(classNo) {
@@ -905,7 +941,10 @@
           });
         const unique = [];
         for (let i = 0; i < validLines.length; i++) {
-          if (unique.indexOf(validLines[i]) === -1) {
+          const alreadyExists = unique.some(function(existing) {
+            return isSameCandidate(existing, validLines[i]);
+          });
+          if (!alreadyExists) {
             unique.push(validLines[i]);
           }
         }
@@ -1013,295 +1052,26 @@
       saveAdminBtn.addEventListener('click', function() {
         excludedList = parseAdminLines(excludedInput.value);
         priorityList = parseAdminLines(priorityInput.value).filter(function(item) {
-          return excludedList.indexOf(item) === -1;
+          return !matchesAnyRule(item, excludedList);
         });
 
         initialExcludedSnapshot = excludedList.slice();
         initialPrioritySnapshot = priorityList.slice();
 
-        adminModal.style.display = 'none';
-        showToast('Settings saved (Guaranteed: ' + priorityList.length + ', Excluded: ' + excludedList.length + ').', '#16a34a');
-      });
-
-      closeAdminBtn.addEventListener('click', function() {
-        adminModal.style.display = 'none';
-      });
-
-      function drawOneCandidate(type) {
-        return new Promise(function(resolve) {
-          let pool = getPool();
-          const currentEligible = pool.filter(function(c) {
-            return excludedList.indexOf(c) === -1;
-          });
-          if (currentEligible.length === 0) {
-            resolve(false);
-            return;
-          }
-
-          let chosenCandidate = null;
-          const availablePriorities = priorityList.filter(function(p) {
-            return currentEligible.indexOf(p) !== -1;
-          });
-
-          if (availablePriorities.length > 0) {
-            const randIdx = Math.floor(Math.random() * availablePriorities.length);
-            chosenCandidate = availablePriorities[randIdx];
-            priorityList = priorityList.filter(function(p) {
-              return p !== chosenCandidate;
-            });
-          } else {
-            const randIdx = Math.floor(Math.random() * currentEligible.length);
-            chosenCandidate = currentEligible[randIdx];
-          }
-
-          animateSlot(pool, chosenCandidate).then(function() {
-            const removeIdx = pool.indexOf(chosenCandidate);
-            if (removeIdx > -1) {
-              pool.splice(removeIdx, 1);
-            }
-            poolInput.value = pool.join(LF_CHAR);
-            updatePoolBadge();
-
-            const parsed = parseCandidate(chosenCandidate);
-            const typeCount = results.filter(function(r) {
-              return r.type === type;
-            }).length + 1;
-            const statusLabel = type === 'winner' ? ('#' + typeCount) : ('Reserve #' + typeCount);
-
-            results.push({
-              order: results.length + 1,
-              type: type,
-              typeOrder: typeCount,
-              statusLabel: statusLabel,
-              raw: chosenCandidate,
-              className: parsed.className,
-              classNo: parsed.classNo,
-              name: parsed.name
-            });
-
-            renderLists();
-            resolve(true);
-          });
-        });
-      }
-
-      drawBtn.addEventListener('click', async function() {
-        if (isDrawing) return;
-
         const pool = getPool();
-        const winnersToDraw = parseInt(drawCountInput.value, 10) || 0;
-        const reservesToDraw = parseInt(reserveCountInput.value, 10) || 0;
-        const totalToDraw = winnersToDraw + reservesToDraw;
+        const matchedWinCount = pool.filter(function(c) {
+          return matchesAnyRule(c, priorityList);
+        }).length;
+        const matchedExcCount = pool.filter(function(c) {
+          return matchesAnyRule(c, excludedList);
+        }).length;
 
-        if (pool.length === 0) {
-          showToast('The Candidate Pool is empty!', '#dc2626');
-          return;
-        }
-        if (winnersToDraw < 0 || reservesToDraw < 0 || totalToDraw <= 0) {
-          showToast('Please enter at least 1 for Capacity or Reserve List.', '#dc2626');
-          return;
-        }
-
-        const eligiblePool = pool.filter(function(c) {
-          return excludedList.indexOf(c) === -1;
-        });
-        if (eligiblePool.length === 0) {
-          showToast('No eligible candidates remaining in the pool.', '#dc2626');
-          return;
-        }
-        if (totalToDraw > eligiblePool.length) {
-          showToast('Need ' + totalToDraw + ' slots, but only ' + eligiblePool.length + ' eligible candidates available.', '#dc2626');
-          return;
-        }
-
-        isDrawing = true;
-        drawBtn.disabled = true;
-        resetBtn.disabled = true;
-        restorePoolBtn.disabled = true;
-        clearPoolBtn.disabled = true;
-        poolInput.disabled = true;
-
-        for (let i = 0; i < winnersToDraw; i++) {
-          statusText.textContent = 'Drawing #' + (i + 1) + ' of ' + winnersToDraw + '...';
-          statusText.style.color = '#86efac';
-          const ok = await drawOneCandidate('winner');
-          if (!ok) break;
-        }
-
-        for (let j = 0; j < reservesToDraw; j++) {
-          statusText.textContent = 'Drawing Reserve ' + (j + 1) + ' of ' + reservesToDraw + '...';
-          statusText.style.color = '#fbbf24';
-          const ok = await drawOneCandidate('reserve');
-          if (!ok) break;
-        }
-
-        statusText.style.color = '#86efac';
-        if (reservesToDraw > 0) {
-          statusText.textContent = 'Completed (' + winnersToDraw + ' Selected, ' + reservesToDraw + ' Reserves)';
-        } else {
-          statusText.textContent = 'Completed (' + winnersToDraw + ' Selected)';
-        }
-
-        isDrawing = false;
-        drawBtn.disabled = false;
-        resetBtn.disabled = false;
-        restorePoolBtn.disabled = false;
-        clearPoolBtn.disabled = false;
-        poolInput.disabled = false;
-      });
-
-      function animateSlot(pool, finalWinner) {
-        return new Promise(function(resolve) {
-          let ticks = 0;
-          const maxTicks = 12;
-          const interval = setInterval(function() {
-            const randomShow = pool[Math.floor(Math.random() * pool.length)];
-            rollingDisplay.textContent = randomShow;
-            ticks++;
-            if (ticks >= maxTicks) {
-              clearInterval(interval);
-              rollingDisplay.textContent = finalWinner;
-              resolve();
-            }
-          }, 50);
-        });
-      }
-
-      function getSortedResults() {
-        let sorted = results.slice();
-        sorted.sort(function(a, b) {
-          // 1. Always place selected winners (#1, #2...) before reserve list (Reserve #1, Reserve #2...)
-          const groupA = a.type === 'winner' ? 0 : 1;
-          const groupB = b.type === 'winner' ? 0 : 1;
-          if (groupA !== groupB) {
-            return groupA - groupB;
-          }
-
-          // 2. For reserve list, always keep reserve priority order (Reserve #1, Reserve #2...) regardless of selected sort mode
-          if (a.type === 'reserve' && b.type === 'reserve') {
-            return a.typeOrder - b.typeOrder;
-          }
-
-          // 3. For selected winners, sort by the chosen mode
-          if (currentSort === 'order') {
-            return a.order - b.order;
-          } else if (currentSort === 'class') {
-            const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
-            if (classCmp !== 0) return classCmp;
-            return a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
-          } else if (currentSort === 'name') {
-            return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-          }
-          return 0;
-        });
-        return sorted;
-      }
-
-      function renderLists() {
-        drawnCount.textContent = results.length;
-        const sorted = getSortedResults();
-        sortedTableBody.innerHTML = '';
-
-        sorted.forEach(function(item) {
-          const tr = document.createElement('tr');
-          const statusClass = item.type === 'winner' ? 'td-status-win' : 'td-status-res';
-
-          const tdStatus = document.createElement('td');
-          tdStatus.className = statusClass;
-          tdStatus.textContent = item.statusLabel;
-
-          const tdClass = document.createElement('td');
-          tdClass.textContent = item.className;
-
-          const tdNo = document.createElement('td');
-          tdNo.textContent = item.classNo;
-
-          const tdName = document.createElement('td');
-          tdName.textContent = item.name;
-
-          tr.appendChild(tdStatus);
-          tr.appendChild(tdClass);
-          tr.appendChild(tdNo);
-          tr.appendChild(tdName);
-          sortedTableBody.appendChild(tr);
-        });
-
-        if (currentSort === 'order') {
-          tableWrapper.scrollTop = tableWrapper.scrollHeight;
-        }
-      }
-
-      sortBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          sortBtns.forEach(function(b) {
-            b.classList.remove('active');
-          });
-          btn.classList.add('active');
-          currentSort = btn.dataset.sort;
-          renderLists();
-        });
-      });
-
-      function copyTextToClipboard(text, btn, tempLabel, toastMsg) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand('copy');
-          const origText = btn.textContent;
-          btn.textContent = tempLabel;
-          setTimeout(function() {
-            btn.textContent = origText;
-          }, 1500);
-          showToast(toastMsg, '#16a34a');
-        } catch (err) {
-          showToast('Failed to copy to clipboard.', '#dc2626');
-        } finally {
-          document.body.removeChild(textarea);
-        }
-      }
-
-      copyBtn.addEventListener('click', function() {
-        if (results.length === 0) {
-          showToast('No results to copy yet.', '#dc2626');
-          return;
-        }
-        const sorted = getSortedResults();
-        const listText = sorted.map(function(w) {
-          if (w.className !== '-' && w.classNo !== '-') {
-            const exportNo = formatNoForExport(w.classNo);
-            return w.name !== '-'
-              ? (w.statusLabel + TAB_CHAR + w.className + TAB_CHAR + exportNo + TAB_CHAR + w.name)
-              : (w.statusLabel + TAB_CHAR + w.className + TAB_CHAR + exportNo);
-          }
-          return w.statusLabel + TAB_CHAR + w.raw;
-        }).join(LF_CHAR);
-        copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
-      });
-
-      resetBtn.addEventListener('click', function() {
-        if (isDrawing) return;
-        if (results.length === 0) return;
-        openConfirmModal(
-          'Reset Drawn Results?',
-          'This will clear all drawn selected entries and reserves from the results table while keeping the remaining Candidate Pool.',
-          'Yes, Clear',
-          function() {
-            results = [];
-            rollingDisplay.textContent = 'READY';
-            statusText.textContent = 'Click Draw to start';
-            statusText.style.color = '#86efac';
-            renderLists();
-            showToast('Drawn results cleared.', '#16a34a');
-          }
+        adminModal.style.display = 'none';
+        showToast(
+          'Saved! Pool matched: ' + matchedWinCount + '/' + priorityList.length + ' Guaranteed, ' + matchedExcCount + '/' + excludedList.length + ' Excluded.',
+          (priorityList.length > 0 && matchedWinCount < priorityList.length) ? '#f59e0b' : '#16a34a'
         );
       });
 
-      updatePoolBadge();
-    })();
-  </script>
-</body>
-</html>
+      closeAdminBtn.addEventListener('click', function() {
+        adminModal
