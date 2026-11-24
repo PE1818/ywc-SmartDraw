@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<!-- saved from url=(0090)https://ais-dev-hsyamthbi7d5m44yzkmr4z-923481295519.asia-northeast1.run.app/smartdraw.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ying Wa College - SmartDraw</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #050a07;
+      color: #ecfdf5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 1.25rem 1.5rem;
+      min-height: 100vh;
+    }
+    header {
+      max-width: 1400px;
+      margin: 0 auto 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #143322;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .header-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    .header-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #22c55e;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .header-sep {
+      color: #1f4732;
+      font-weight: 700;
+    }
+    .header-subtitle {
+      font-size: 1rem;
+      background: linear-gradient(90deg, #6ee7b7, #4ade80, #5eead4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #22c55e;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .btn-admin {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 40px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #86efac;
+      background: #0d1712;
+      border: 1px solid #1f3a2c;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-admin:hover:not(:disabled) {
+      border-color: #22c55e;
+      background: #16261e;
+      color: #ffffff;
+    }
+    .btn-admin:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    @media (max-width: 540px) {
+      .header-title {
+        font-size: 1.3rem;
+      }
+      .header-subtitle {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+    }
+
+    /* Unified Symmetrical 2x2 Grid Layout */
+    .grid-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    @media (max-width: 720px) {
+      .grid-2x2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #0d1712;
+      border: 1px solid #143322;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-top {
+      min-height: 240px;
+    }
+    .panel-bottom {
+      height: 55vh;
+      min-height: 420px;
+    }
+    .panel-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid #143322;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+    }
+    .count-text {
+      color: #4ade80;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .dedupe-btn {
+      background: none;
+      border: none;
+      color: #fbbf24;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .dedupe-btn:hover:not(:disabled) {
+      color: #fde68a;
+    }
+    .dedupe-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .fast-toggle {
+      padding: 0.3rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 0.45rem;
+      border: 1px solid #163022;
+      background: #050a07;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .fast-toggle[aria-pressed="true"] {
+      border-color: #22c55e;
+      background: rgba(22, 163, 74, 0.2);
+      color: #4ade80;
+    }
+    .fast-toggle:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Panel 1: SmartDraw */
+    .machine-box {
+      flex: 1;
+      min-height: 116px;
+      background: #050a07;
+      border: 2px solid #22c55e;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      box-shadow: inset 0 0 22px rgba(34, 197, 94, 0.16);
+    }
+    .rolling-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      word-break: break-word;
+      line-height: 1.3;
+      max-height: 2.6em;
+      overflow: hidden;
+    }
+    .rolling-status {
+      font-size: 0.85rem;
+      color: #86efac;
+      margin-top: 0.45rem;
+      font-weight: 500;
+    }
+    .machine-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn {
+      width: 100%;
+      min-height: 42px;
+      padding: 0.65rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.65rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-draw {
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 1.05rem;
+    }
+    .btn-draw:hover:not(:disabled) {
+      background: #15803d;
+    }
+    .btn-reset {
+      background: #b91c1c;
+      color: #ffffff;
+    }
+    .btn-reset:hover:not(:disabled) {
+      background: #991b1b;
+    }
+    .btn-secondary {
+      background: #16261e;
+      color: #dcfce7;
+      border: 1px solid #1f3a2c;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #1f3a2c;
+    }
+    .btn-outline-danger {
+      background: #0d1712;
+      color: #f87171;
+      border: 1px solid #7f1d1d;
+    }
+    .btn-outline-danger:hover:not(:disabled) {
+      background: #450a0a;
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    /* Panel 2: Selection Quota */
+    .qty-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      align-items: center;
+    }
+    .qty-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #050a07;
+      border: 1px solid #163022;
+      border-radius: 0.75rem;
+      padding: 0.85rem 0.75rem;
+      height: 100%;
+    }
+    .qty-label-win {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #4ade80;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+    .qty-label-res {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+    .qty-input {
+      width: 100%;
+      max-width: 160px;
+      font-size: 2.15rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 0.45rem;
+      border-radius: 0.65rem;
+      border: 2px solid #166534;
+      background: #0d1712;
+      color: #22c55e;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+    }
+    .qty-input:focus {
+      outline: none;
+      border-color: #4ade80;
+    }
+    .qty-input:disabled {
+      opacity: 0.5;
+    }
+    .qty-input-reserve {
+      border-color: #92400e;
+      color: #fbbf24;
+    }
+    .qty-input-reserve:focus {
+      border-color: #f59e0b;
+    }
+    .helper-text {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 0.65rem;
+      line-height: 1.4;
+    }
+
+    /* Panel 3 & 4: Lists & Textarea */
+    textarea {
+      width: 100%;
+      flex: 1;
+      background: #050a07;
+      color: #ecfdf5;
+      border: 1px solid #163022;
+      border-radius: 0.65rem;
+      padding: 0.75rem;
+      font-size: 0.92rem;
+      resize: none;
+      line-height: 1.6;
+      font-family: inherit;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #22c55e;
+    }
+    textarea:disabled {
+      opacity: 0.6;
+    }
+
+    /* Sorting Controls & Table */
+    .sort-controls {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .sort-btn {
+      flex: 1;
+      min-height: 36px;
+      padding: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #050a07;
+      color: #9ca3af;
+      border: 1px solid #163022;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .sort-btn.active {
+      background: #16a34a;
+      color: #ffffff;
+      border-color: #16a34a;
+    }
+    .sort-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .table-wrapper {
+      flex: 1;
+      background: #050a07;
+      border-radius: 0.65rem;
+      overflow-y: auto;
+      border: 1px solid #163022;
+    }
+    .table-actions {
+      display: flex;
+      gap: 0.65rem;
+      margin-top: 0.65rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      background: #0d1712;
+      z-index: 1;
+    }
+    th {
+      padding: 0.6rem 0.65rem;
+      color: #22c55e;
+      font-weight: 700;
+      border-bottom: 1px solid #163022;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid #0d1712;
+      color: #ecfdf5;
+    }
+    .td-num {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    tbody tr:hover {
+      background: #0d1712;
+    }
+    .td-status-win {
+      color: #4ade80;
+      font-weight: 700;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .td-status-res {
+      color: #fbbf24;
+      font-weight: 700;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .empty-row td {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* Custom Toast Notification */
+    .toast-banner {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: #0d1712;
+      color: #ecfdf5;
+      border: 2px solid #22c55e;
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+      z-index: 2000;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 380px;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: #0d1712;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      width: 95%;
+      max-width: 940px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #22c55e;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.75);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #143322;
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+    .modal-desc {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-top: 0.3rem;
+      line-height: 1.5;
+    }
+    .modal-close-x {
+      width: 38px;
+      height: 38px;
+      border-radius: 0.5rem;
+      border: 1px solid #1f3a2c;
+      background: #16261e;
+      color: #d1d5db;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .modal-close-x:hover {
+      background: #1f3a2c;
+      color: #ffffff;
+    }
+    .admin-warning {
+      display: none;
+      margin-bottom: 0.9rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      background: rgba(120, 53, 15, 0.35);
+      color: #fde68a;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid #143322;
+      flex-wrap: wrap;
+    }
+    .modal-actions-right {
+      display: flex;
+      gap: 0.65rem;
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    /* High-Contrast Admin Dual Cards */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      flex: 1;
+      min-height: 0;
+    }
+    @media (max-width: 680px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+    }
+    .admin-card-win {
+      background: rgba(6, 78, 59, 0.25);
+      border: 1px solid #22c55e;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-lose {
+      background: rgba(127, 29, 29, 0.25);
+      border: 1px solid #ef4444;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      gap: 0.5rem;
+    }
+    .tag-win {
+      color: #4ade80;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .tag-lose {
+      color: #f87171;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .admin-textarea-win {
+      height: 300px;
+      min-height: 220px;
+      max-height: 45vh;
+      background: #040906;
+      border: 1px solid #166534;
+      color: #dcfce7;
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+    .admin-textarea-win:focus {
+      border-color: #4ade80;
+    }
+    .admin-textarea-lose {
+      height: 300px;
+      min-height: 220px;
+      max-height: 45vh;
+      background: #0c0505;
+      border: 1px solid #991b1b;
+      color: #fee2e2;
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+    .admin-textarea-lose:focus {
+      border-color: #f87171;
+    }
+    .auth-box {
+      max-width: 440px;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+    .auth-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #dcfce7;
+      margin-bottom: 0.4rem;
+    }
+    .pwd-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .auth-input {
+      width: 100%;
+      background: #050a07;
+      color: #ffffff;
+      border: 1px solid #166534;
+      border-radius: 0.65rem;
+      padding: 0.65rem 2.75rem 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    .auth-input:focus {
+      outline: none;
+      border-color: #4ade80;
+    }
+    .pwd-eye-btn {
+      position: absolute;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .pwd-eye-btn:hover {
+      color: #ffffff;
+    }
+    .auth-error {
+      display: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f87171;
+    }
+    .auth-info {
+      display: none;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      background: rgba(6, 78, 59, 0.3);
+      color: #a7f3d0;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .forgot-btn {
+      background: none;
+      border: none;
+      color: #4ade80;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      align-self: flex-start;
+      font-family: inherit;
+    }
+    .forgot-btn:hover {
+      color: #86efac;
+    }
+    .forgot-hint {
+      display: none;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.6rem;
+      border: 1px solid #163022;
+      background: #050a07;
+      color: #d1d5db;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+  </style>
+<script src="./Ying Wa College - SmartDraw_files/_aistudio-iframe.js.下載"></script></head>
+<body>
+
+  <!-- Toast Banner -->
+  <div id="toastBanner" class="toast-banner" role="status" aria-live="polite"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-brand">
+      <h1 class="header-title">Ying Wa College</h1>
+      <span class="header-sep" aria-hidden="true">·</span>
+      <span class="header-subtitle">SmartDraw</span>
+    </div>
+    <button type="button" id="openAdminBtn" class="btn-admin" title="Open Admin Allocation Settings (Alt+A)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>Admin</span>
+    </button>
+  </header>
+
+  <main class="grid-2x2">
+    <!-- TOP-LEFT: 1. SmartDraw -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>1. SmartDraw</span>
+        <button type="button" id="fastModeBtn" class="fast-toggle" aria-pressed="false">
+          Fast Mode: Off
+        </button>
+      </div>
+      <div class="machine-box">
+        <div class="rolling-text" id="rollingDisplay" aria-live="polite">READY</div>
+        <div class="rolling-status" id="statusText">Click Draw to start</div>
+      </div>
+      <div class="machine-actions">
+        <button type="button" class="btn btn-draw" id="drawBtn" style="flex: 2;">Draw</button>
+        <button type="button" class="btn btn-reset" id="resetBtn" style="flex: 1;">Reset Results</button>
+      </div>
+    </section>
+
+    <!-- TOP-RIGHT: 2. Selection Quota -->
+    <section class="panel panel-top">
+      <div class="panel-header">
+        <span>2. Selection Quota</span>
+      </div>
+      <div class="qty-grid">
+        <div class="qty-box">
+          <label for="drawCount" class="qty-label-win">Capacity</label>
+          <input type="number" id="drawCount" class="qty-input" value="3" min="0" step="1" data-sharkid="__0">
+        </div>
+        <div class="qty-box">
+          <label for="reserveCount" class="qty-label-res">Reserve List</label>
+          <input type="number" id="reserveCount" class="qty-input qty-input-reserve" value="0" min="0" step="1" data-sharkid="__1">
+        </div>
+      </div>
+      <div class="helper-text">
+        Capacity slots are drawn first, followed immediately by the Reserve List.
+      </div>
+    </section>
+
+    <!-- BOTTOM-LEFT: 3. Candidate Pool -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <label for="poolInput">3. Candidate Pool</label>
+        <div class="header-meta">
+          <button type="button" id="dedupeBtn" class="dedupe-btn" style="display:none;"></button>
+          <span class="count-text" id="poolCount">0 candidates</span>
+        </div>
+      </div>
+      <textarea id="poolInput" aria-label="Candidate Pool" placeholder="Paste list here (unlimited rows, one per line)
+Supports Class+No., Excel tabs, or CSV:
+1A 01 Chan Tai Man
+1A, 02, Lee Siu Ming
+S1B 09" data-sharkid="__2"></textarea>
+      <div class="table-actions">
+        <button type="button" class="btn btn-secondary" id="restorePoolBtn" style="flex: 1;">Restore Pool</button>
+        <button type="button" class="btn btn-outline-danger" id="clearPoolBtn" style="flex: 1;">Clear Pool</button>
+      </div>
+    </section>
+
+    <!-- BOTTOM-RIGHT: 4. Selection Results -->
+    <section class="panel panel-bottom">
+      <div class="panel-header">
+        <span>4. Selection Results</span>
+        <span class="count-text" id="drawnCount">0 drawn</span>
+      </div>
+      <div class="sort-controls" role="group" aria-label="Sort results">
+        <button type="button" class="sort-btn active" data-sort="order">Draw Order</button>
+        <button type="button" class="sort-btn" data-sort="class">Class / No.</button>
+        <button type="button" class="sort-btn" data-sort="name">Name (A-Z)</button>
+      </div>
+      <div class="table-wrapper" id="tableWrapper">
+        <table id="sortedTable">
+          <thead>
+            <tr>
+              <th style="width: 115px;">Status</th>
+              <th style="width: 80px;">Class</th>
+              <th style="width: 65px;">No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="sortedTableBody">
+            <tr class="empty-row">
+              <td colspan="4">Drawn candidates will appear here in real time.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <button type="button" class="btn btn-draw" id="copyExcelBtn" style="flex: 2; font-size: 0.95rem;">Table for Excel</button>
+        <button type="button" class="btn btn-secondary" id="copyBtn" style="flex: 1;">Text List</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Admin Settings Modal (Login -> Reset -> Guaranteed vs Excluded) -->
+  <div class="modal-overlay" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+    <div class="modal-box" id="adminModalBox">
+      <!-- Step 1: Login View -->
+      <div id="adminLoginView">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title" id="adminModalTitle">Admin Login</h2>
+            <p class="modal-desc">Protected Allocation Settings</p>
+          </div>
+          <button type="button" id="closeLoginXBtn" class="modal-close-x" aria-label="Close Admin Login">×</button>
+        </div>
+
+        <form id="adminLoginForm" class="auth-form">
+          <div>
+            <label for="adminPasswordInput" class="auth-label">Password</label>
+            <div class="pwd-input-wrap">
+              <input type="password" id="adminPasswordInput" class="auth-input" autocomplete="current-password" placeholder="Enter admin password">
+              <button type="button" id="toggleLoginPwdBtn" class="pwd-eye-btn">Show</button>
+            </div>
+          </div>
+
+          <div id="adminLoginError" class="auth-error" role="alert"></div>
+
+          <button type="button" id="forgotPwdBtn" class="forgot-btn">Forgot password?</button>
+          <div id="forgotPwdHint" class="forgot-hint">
+            Enter the super password in the password field above and click <strong style="color:#86efac;">Unlock</strong> to reset the admin password.
+          </div>
+
+          <div style="display:flex; gap:0.75rem; margin-top:0.25rem;">
+            <button type="button" class="btn btn-secondary" id="closeLoginBtn" style="flex:1;">Cancel</button>
+            <button type="submit" class="btn btn-draw" style="flex:1; font-size:0.95rem;">Unlock</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: Reset Password View -->
+      <div id="adminResetView" style="display:none;">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">Reset Admin Password</h2>
+            <p class="modal-desc">Enter and confirm your new password</p>
+          </div>
+          <button type="button" id="closeResetXBtn" class="modal-close-x" aria-label="Close Reset Password">×</button>
+        </div>
+
+        <div id="resetInfoBanner" class="auth-info" style="margin-bottom:0.9rem;"></div>
+
+        <form id="adminResetForm" class="auth-form">
+          <div>
+            <label for="newAdminPwdInput" class="auth-label">New Password</label>
+            <div class="pwd-input-wrap">
+              <input type="password" id="newAdminPwdInput" class="auth-input" autocomplete="new-password" placeholder="Enter new password">
+              <button type="button" id="toggleResetPwdBtn" class="pwd-eye-btn">Show</button>
+            </div>
+          </div>
+
+          <div>
+            <label for="confirmAdminPwdInput" class="auth-label">Confirm New Password</label>
+            <div class="pwd-input-wrap">
+              <input type="password" id="confirmAdminPwdInput" class="auth-input" style="padding-right:0.85rem;" autocomplete="new-password" placeholder="Re-enter new password">
+            </div>
+          </div>
+
+          <div id="adminResetError" class="auth-error" role="alert"></div>
+
+          <div style="display:flex; gap:0.75rem; margin-top:0.25rem;">
+            <button type="button" class="btn btn-secondary" id="closeResetBtn" style="flex:1;">Cancel</button>
+            <button type="submit" class="btn btn-draw" style="flex:1; font-size:0.95rem;">Save Password</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 3: Allocation Settings View -->
+      <div id="adminSettingsView" style="display:none; flex-direction:column; flex:1; min-height:0;">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">Admin Allocation Settings</h2>
+            <p class="modal-desc">
+              Configure guaranteed or excluded candidates (one per line; supports <code>1A 01</code>, <code>S1A 1</code>, CSV, or full rows).
+              Excluded entries are blocked from both Capacity and the Reserve List.
+            </p>
+          </div>
+          <button type="button" id="closeAdminXBtn" class="modal-close-x" aria-label="Close Admin Settings">×</button>
+        </div>
+
+        <div id="adminWarning" class="admin-warning" role="status"></div>
+
+        <div class="admin-grid">
+          <div class="admin-card-win">
+            <div class="admin-card-header">
+              <label for="priorityInput" class="tag-win">✓ Guaranteed (Capacity)</label>
+              <span id="priorityBadge" style="font-size:0.78rem; color:#86efac; font-weight:600; font-variant-numeric:tabular-nums;">0 entries</span>
+            </div>
+            <textarea id="priorityInput" class="admin-textarea-win" placeholder="Enter guaranteed entries here (one per line)...
+e.g.
+1A 01
+3C 03"></textarea>
+          </div>
+
+          <div class="admin-card-lose">
+            <div class="admin-card-header">
+              <label for="excludedInput" class="tag-lose">✕ Excluded (Blocked)</label>
+              <span id="excludedBadge" style="font-size:0.78rem; color:#fca5a5; font-weight:600; font-variant-numeric:tabular-nums;">0 entries</span>
+            </div>
+            <textarea id="excludedInput" class="admin-textarea-lose" placeholder="Enter excluded entries here (blocked from Capacity &amp; Reserve)...
+e.g.
+2B 14
+4D 08"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline-danger" id="clearAdminRulesBtn" style="width:auto; padding:0.55rem 1rem;">Clear All Rules</button>
+            <button type="button" class="btn btn-secondary" id="changePwdFromSettingsBtn" style="width:auto; padding:0.55rem 1rem;">Change Password</button>
+          </div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-secondary" id="closeAdminBtn" style="width:auto; min-width:110px;">Cancel</button>
+            <button type="button" class="btn btn-draw" id="saveAdminBtn" style="width:auto; min-width:140px; font-size:0.95rem;">Save &amp; Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-box" style="max-width: 410px;">
+      <div class="modal-title" id="confirmTitle" style="color: #f87171;">Reset Drawn Results?</div>
+      <div class="modal-desc" id="confirmDesc" style="margin-top:0.5rem; margin-bottom:1.25rem; color:#d1d5db;">
+        This will clear all drawn selected entries and reserves from the results table.
+      </div>
+      <div style="display:flex; gap:0.75rem;">
+        <button type="button" class="btn btn-reset" id="confirmYesBtn" style="flex:1;">Yes, Proceed</button>
+        <button type="button" class="btn btn-secondary" id="confirmNoBtn" style="flex:1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const TAB_CHAR = '\t';
+      const LF_CHAR = '\n';
+
+      const poolInput = document.getElementById('poolInput');
+      const poolCount = document.getElementById('poolCount');
+      const dedupeBtn = document.getElementById('dedupeBtn');
+      const drawCountInput = document.getElementById('drawCount');
+      const reserveCountInput = document.getElementById('reserveCount');
+      const fastModeBtn = document.getElementById('fastModeBtn');
+      const drawBtn = document.getElementById('drawBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const restorePoolBtn = document.getElementById('restorePoolBtn');
+      const clearPoolBtn = document.getElementById('clearPoolBtn');
+      const rollingDisplay = document.getElementById('rollingDisplay');
+      const statusText = document.getElementById('statusText');
+      const drawnCount = document.getElementById('drawnCount');
+      const tableWrapper = document.getElementById('tableWrapper');
+      const sortedTableBody = document.getElementById('sortedTableBody');
+      const sortBtns = document.querySelectorAll('.sort-btn');
+      const copyBtn = document.getElementById('copyBtn');
+      const copyExcelBtn = document.getElementById('copyExcelBtn');
+      const toastBanner = document.getElementById('toastBanner');
+
+      const openAdminBtn = document.getElementById('openAdminBtn');
+      const adminModal = document.getElementById('adminModal');
+      const adminModalBox = document.getElementById('adminModalBox');
+      const adminLoginView = document.getElementById('adminLoginView');
+      const adminResetView = document.getElementById('adminResetView');
+      const adminSettingsView = document.getElementById('adminSettingsView');
+      const adminLoginForm = document.getElementById('adminLoginForm');
+      const adminPasswordInput = document.getElementById('adminPasswordInput');
+      const toggleLoginPwdBtn = document.getElementById('toggleLoginPwdBtn');
+      const adminLoginError = document.getElementById('adminLoginError');
+      const forgotPwdBtn = document.getElementById('forgotPwdBtn');
+      const forgotPwdHint = document.getElementById('forgotPwdHint');
+      const closeLoginBtn = document.getElementById('closeLoginBtn');
+      const closeLoginXBtn = document.getElementById('closeLoginXBtn');
+      const resetInfoBanner = document.getElementById('resetInfoBanner');
+      const adminResetForm = document.getElementById('adminResetForm');
+      const newAdminPwdInput = document.getElementById('newAdminPwdInput');
+      const confirmAdminPwdInput = document.getElementById('confirmAdminPwdInput');
+      const toggleResetPwdBtn = document.getElementById('toggleResetPwdBtn');
+      const adminResetError = document.getElementById('adminResetError');
+      const closeResetBtn = document.getElementById('closeResetBtn');
+      const closeResetXBtn = document.getElementById('closeResetXBtn');
+      const changePwdFromSettingsBtn = document.getElementById('changePwdFromSettingsBtn');
+      const adminWarning = document.getElementById('adminWarning');
+      const priorityInput = document.getElementById('priorityInput');
+      const excludedInput = document.getElementById('excludedInput');
+      const priorityBadge = document.getElementById('priorityBadge');
+      const excludedBadge = document.getElementById('excludedBadge');
+      const clearAdminRulesBtn = document.getElementById('clearAdminRulesBtn');
+      const saveAdminBtn = document.getElementById('saveAdminBtn');
+      const closeAdminBtn = document.getElementById('closeAdminBtn');
+      const closeAdminXBtn = document.getElementById('closeAdminXBtn');
+
+      const confirmModal = document.getElementById('confirmModal');
+      const confirmTitle = document.getElementById('confirmTitle');
+      const confirmDesc = document.getElementById('confirmDesc');
+      const confirmYesBtn = document.getElementById('confirmYesBtn');
+      const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+      let results = [];
+      let priorityList = [];
+      let excludedList = [];
+      let initialPrioritySnapshot = [];
+      let initialExcludedSnapshot = [];
+      let restoreSnapshot = '';
+      let currentSort = 'order';
+      let isDrawing = false;
+      let fastMode = false;
+      let toastTimer = null;
+      let pendingConfirmAction = null;
+      const copyTimers = new WeakMap();
+      const origButtonLabels = new WeakMap();
+
+      function normalizeLineSpaces(str) {
+        return str.replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim();
+      }
+
+      function splitTextLines(text) {
+        return text.replace(/\r\n?/g, '\n').split('\n');
+      }
+
+      function isAllDigits(str) {
+        return /^\d+$/.test(str);
+      }
+
+      function secureRandomInt(max) {
+        if (max <= 1) return 0;
+        if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+          const limit = Math.floor(0x100000000 / max) * max;
+          const buf = new Uint32Array(1);
+          let rand = 0;
+          do {
+            window.crypto.getRandomValues(buf);
+            rand = buf[0];
+          } while (rand >= limit);
+          return rand % max;
+        }
+        return Math.floor(Math.random() * max);
+      }
+
+      function showToast(msg, borderColor) {
+        toastBanner.textContent = msg;
+        toastBanner.style.borderColor = borderColor || '#22c55e';
+        toastBanner.style.display = 'flex';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() {
+          toastBanner.style.display = 'none';
+        }, 3200);
+      }
+
+      function openConfirmModal(title, desc, yesText, onConfirm) {
+        confirmTitle.textContent = title;
+        confirmDesc.textContent = desc;
+        confirmYesBtn.textContent = yesText;
+        pendingConfirmAction = onConfirm;
+        confirmModal.style.display = 'flex';
+      }
+
+      function closeConfirmModal() {
+        confirmModal.style.display = 'none';
+        pendingConfirmAction = null;
+      }
+
+      confirmYesBtn.addEventListener('click', function() {
+        const action = pendingConfirmAction;
+        closeConfirmModal();
+        if (typeof action === 'function') {
+          action();
+        }
+      });
+
+      confirmNoBtn.addEventListener('click', closeConfirmModal);
+      confirmModal.addEventListener('click', function(e) {
+        if (e.target === confirmModal) closeConfirmModal();
+      });
+
+      function parseCandidate(rawStr) {
+        const rawTrimmed = rawStr.trim();
+        if (rawTrimmed.indexOf('\t') !== -1 || rawTrimmed.indexOf(',') !== -1) {
+          const delimiter = rawTrimmed.indexOf('\t') !== -1 ? /\t+/ : /\s*,\s*/;
+          const parts = rawTrimmed.split(delimiter).map(normalizeLineSpaces).filter(Boolean);
+          if (parts.length >= 2) {
+            const classMatch = parts[0].match(/^([A-Za-z]?\d+[A-Za-z]+)$/);
+            const noMatch = parts[1].match(/^(\d+)$/);
+            if (classMatch && noMatch) {
+              const restName = parts.slice(2).join(' ').trim();
+              return {
+                className: classMatch[1].toUpperCase(),
+                classNo: noMatch[1],
+                name: restName.length > 0 ? restName : '-'
+              };
+            }
+            const combinedMatch = parts[0].match(/^([A-Za-z]?\d+[A-Za-z]+)[\s\-–—]+(\d+)$/);
+            if (combinedMatch) {
+              const restName = parts.slice(1).join(' ').trim();
+              return {
+                className: combinedMatch[1].toUpperCase(),
+                classNo: combinedMatch[2],
+                name: restName.length > 0 ? restName : '-'
+              };
+            }
+          }
+        }
+
+        const cleaned = normalizeLineSpaces(rawStr);
+        const match = cleaned.match(/^([A-Za-z]?\d+[A-Za-z]+)[\s\-–—]+(\d+)(?:\s+(.*))?$/);
+        if (match) {
+          const restName = (match[3] || '').trim();
+          return {
+            className: match[1].toUpperCase(),
+            classNo: match[2],
+            name: restName.length > 0 ? restName : '-'
+          };
+        }
+
+        return {
+          className: '-',
+          classNo: '-',
+          name: cleaned
+        };
+      }
+
+      function isSameCandidate(poolEntry, adminEntry) {
+        const pNorm = normalizeLineSpaces(poolEntry).toLowerCase();
+        const aNorm = normalizeLineSpaces(adminEntry).toLowerCase();
+        if (!pNorm || !aNorm) return false;
+        if (pNorm === aNorm) return true;
+
+        const pParsed = parseCandidate(poolEntry);
+        const aParsed = parseCandidate(adminEntry);
+
+        if (pParsed.className !== '-' && pParsed.classNo !== '-' &&
+            aParsed.className !== '-' && aParsed.classNo !== '-') {
+          const sameClass = pParsed.className === aParsed.className;
+          const sameNo = parseInt(pParsed.classNo, 10) === parseInt(aParsed.classNo, 10);
+          if (sameClass && sameNo) {
+            if (aParsed.name === '-' || pParsed.name === '-') {
+              return true;
+            }
+            return pParsed.name.toLowerCase() === aParsed.name.toLowerCase();
+          }
+        }
+        return false;
+      }
+
+      function matchesAnyRule(poolEntry, ruleList) {
+        for (let i = 0; i < ruleList.length; i++) {
+          if (isSameCandidate(poolEntry, ruleList[i])) return true;
+        }
+        return false;
+      }
+
+      function formatNoForExport(classNo) {
+        if (isAllDigits(classNo)) {
+          return String(parseInt(classNo, 10));
+        }
+        return classNo;
+      }
+
+      const SINGLE_HEADERS = [
+        'name', 'names', 'student', 'students', 'candidate', 'candidates',
+        'class', 'no', 'no.', 'number', 'class no', 'class no.', 'student name',
+        'full name', 'english name', 'chinese name', 'student id', 'sams id',
+        'email', 'remarks', 'remark', 'note', 'notes',
+        '姓名', '學生姓名', '英文姓名', '中文姓名', '班別', '學號', '班號', '名單', '參加者'
+      ];
+
+      const HEADER_TOKENS = [
+        'class', 'form', 'grade', 'no', 'no.', 'num', 'number', 'id',
+        'student', 'sams', 'name', 'names', 'english', 'chinese', 'full',
+        'gender', 'sex', 'group', 'house', 'email', 'remark', 'remarks', 'note', 'notes',
+        '班別', '年級', '學號', '班號', '姓名', '學生姓名', '英文姓名', '中文姓名', '組別', '社別', '備註'
+      ];
+
+      function isHeaderRow(line) {
+        const normalized = normalizeLineSpaces(line).toLowerCase();
+        if (!normalized) return false;
+        if (SINGLE_HEADERS.indexOf(normalized) !== -1) return true;
+
+        const tokens = normalized
+          .replace(/[,;|/\-–—]+/g, ' ')
+          .split(' ')
+          .filter(function(t) { return t.length > 0; });
+
+        if (tokens.length >= 2) {
+          return tokens.every(function(token) {
+            return HEADER_TOKENS.indexOf(token) !== -1;
+          });
+        }
+        return false;
+      }
+
+      function getPool() {
+        return splitTextLines(poolInput.value)
+          .map(normalizeLineSpaces)
+          .filter(function(line) {
+            return line.length > 0 && !isHeaderRow(line);
+          });
+      }
+
+      function countDuplicates(entries) {
+        const unique = [];
+        let dupes = 0;
+        for (let i = 0; i < entries.length; i++) {
+          const exists = unique.some(function(u) { return isSameCandidate(u, entries[i]); });
+          if (exists) dupes++;
+          else unique.push(entries[i]);
+        }
+        return dupes;
+      }
+
+      function updatePoolBadge() {
+        const entries = getPool();
+        poolCount.textContent = entries.length + ' candidates';
+        const dupes = countDuplicates(entries);
+        if (dupes > 0) {
+          dedupeBtn.textContent = 'Remove ' + dupes + (dupes === 1 ? ' duplicate' : ' duplicates');
+          dedupeBtn.style.display = 'inline';
+        } else {
+          dedupeBtn.style.display = 'none';
+        }
+      }
+
+      poolInput.addEventListener('input', function() {
+        if (poolInput.value.trim().length > 0) {
+          restoreSnapshot = poolInput.value;
+        }
+        updatePoolBadge();
+      });
+
+      dedupeBtn.addEventListener('click', function() {
+        if (isDrawing) return;
+        const entries = getPool();
+        const dupes = countDuplicates(entries);
+        if (dupes === 0) return;
+
+        const unique = [];
+        for (let i = 0; i < entries.length; i++) {
+          if (!unique.some(function(u) { return isSameCandidate(u, entries[i]); })) {
+            unique.push(entries[i]);
+          }
+        }
+        poolInput.value = unique.join(LF_CHAR);
+        if (poolInput.value.trim().length > 0) {
+          restoreSnapshot = poolInput.value;
+        }
+        updatePoolBadge();
+        showToast('Removed ' + dupes + ' duplicate ' + (dupes === 1 ? 'entry' : 'entries') + '.', '#22c55e');
+      });
+
+      restorePoolBtn.addEventListener('click', function() {
+        if (isDrawing) return;
+        if (!restoreSnapshot.trim()) {
+          showToast('No previous non-empty candidate pool to restore.', '#f59e0b');
+          return;
+        }
+        const executeRestore = function() {
+          poolInput.value = restoreSnapshot;
+          priorityList = initialPrioritySnapshot.slice();
+          excludedList = initialExcludedSnapshot.slice();
+          updatePoolBadge();
+          results = [];
+          rollingDisplay.textContent = 'READY';
+          statusText.textContent = 'List restored. Click Draw to start';
+          statusText.style.color = '#86efac';
+          renderLists();
+          showToast('Original candidate list restored.', '#22c55e');
+        };
+
+        if (results.length > 0 || poolInput.value !== restoreSnapshot) {
+          openConfirmModal(
+            'Restore Original Pool?',
+            'This will restore the original candidate list and clear all drawn results.',
+            'Yes, Restore',
+            executeRestore
+          );
+        } else {
+          executeRestore();
+        }
+      });
+
+      clearPoolBtn.addEventListener('click', function() {
+        if (isDrawing) return;
+        if (poolInput.value.trim() === '') {
+          poolInput.value = '';
+          updatePoolBadge();
+          return;
+        }
+        openConfirmModal(
+          'Clear Candidate Pool?',
+          'This will clear the Candidate Pool text area. You can still use Restore Pool afterwards to recover your previous list.',
+          'Yes, Clear Pool',
+          function() {
+            if (poolInput.value.trim().length > 0) {
+              restoreSnapshot = poolInput.value;
+            }
+            poolInput.value = '';
+            updatePoolBadge();
+            showToast('Candidate Pool cleared. Use Restore Pool if needed.', '#dc2626');
+          }
+        );
+      });
+
+      fastModeBtn.addEventListener('click', function() {
+        if (isDrawing) return;
+        fastMode = !fastMode;
+        fastModeBtn.setAttribute('aria-pressed', fastMode ? 'true' : 'false');
+        fastModeBtn.textContent = fastMode ? 'Fast Mode: On' : 'Fast Mode: Off';
+      });
+
+      function parseAdminLines(text) {
+        const validLines = splitTextLines(text)
+          .map(normalizeLineSpaces)
+          .filter(function(line) {
+            return line.length > 0 && !isHeaderRow(line);
+          });
+        const unique = [];
+        for (let i = 0; i < validLines.length; i++) {
+          if (!unique.some(function(existing) { return isSameCandidate(existing, validLines[i]); })) {
+            unique.push(validLines[i]);
+          }
+        }
+        return unique;
+      }
+
+      function updateAdminBadges() {
+        const pool = getPool();
+        const eLines = parseAdminLines(excludedInput.value);
+        const pLines = parseAdminLines(priorityInput.value).filter(function(item) {
+          return !matchesAnyRule(item, eLines);
+        });
+        const pMatched = pool.filter(function(c) { return matchesAnyRule(c, pLines); }).length;
+        const eMatched = pool.filter(function(c) { return matchesAnyRule(c, eLines); }).length;
+
+        priorityBadge.textContent = pLines.length + (pLines.length === 1 ? ' entry' : ' entries') + ' · ' + pMatched + ' in pool';
+        excludedBadge.textContent = eLines.length + (eLines.length === 1 ? ' entry' : ' entries') + ' · ' + eMatched + ' in pool';
+
+        const cap = Math.max(0, parseInt(drawCountInput.value, 10) || 0);
+        if (pMatched > cap) {
+          adminWarning.textContent = 'Notice: Guaranteed matches (' + pMatched + ') exceed current Capacity (' + cap + '). Only Capacity slots prioritize guaranteed entries; remaining entries will not be forced into Reserve slots.';
+          adminWarning.style.display = 'block';
+        } else {
+          adminWarning.style.display = 'none';
+        }
+      }
+
+      priorityInput.addEventListener('input', updateAdminBadges);
+      excludedInput.addEventListener('input', updateAdminBadges);
+
+      const ADMIN_PWD_STORAGE_KEY = 'ywc_smartdraw_admin_pwd_hash';
+      const DEFAULT_ADMIN_PWD_HASH = 'ab74f6c66727b69a0892ad0f5b28e0ea597bf5bd82bb2752062dc20da77592bd';
+      const SUPER_PWD_HASH = 'ace0a1325349fe96499c8816d6678ce4798e392eab6bbe2e6adb8e2f05f069e0';
+
+      function sha256(str) {
+        const bytes = new TextEncoder().encode(str);
+        const K = [
+          0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+          0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+          0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+          0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+          0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+          0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+          0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+          0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+        ];
+        const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+        const bitLen = bytes.length * 8;
+        const totalLen = Math.ceil((bytes.length + 9) / 64) * 64;
+        const padded = new Uint8Array(totalLen);
+        padded.set(bytes);
+        padded[bytes.length] = 0x80;
+        const view = new DataView(padded.buffer);
+        view.setUint32(totalLen - 8, Math.floor(bitLen / 0x100000000), false);
+        view.setUint32(totalLen - 4, bitLen >>> 0, false);
+        const w = new Uint32Array(64);
+        function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+        for (let i = 0; i < totalLen; i += 64) {
+          for (let t = 0; t < 16; t++) w[t] = view.getUint32(i + t * 4, false);
+          for (let t = 16; t < 64; t++) {
+            const s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
+            const s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
+            w[t] = (w[t - 16] + s0 + w[t - 7] + s1) >>> 0;
+          }
+          let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+          for (let t = 0; t < 64; t++) {
+            const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+            const ch = (e & f) ^ (~e & g);
+            const temp1 = (h + S1 + ch + K[t] + w[t]) >>> 0;
+            const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+            const maj = (a & b) ^ (a & c) ^ (b & c);
+            const temp2 = (S0 + maj) >>> 0;
+            h = g; g = f; f = e; e = (d + temp1) >>> 0;
+            d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+          }
+          H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+          H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+        }
+        let hex = '';
+        for (let i = 0; i < H.length; i++) {
+          hex += H[i].toString(16).padStart(8, '0');
+        }
+        return hex;
+      }
+
+      function getStoredAdminPwdHash() {
+        try {
+          const saved = window.localStorage.getItem(ADMIN_PWD_STORAGE_KEY);
+          if (saved && /^[0-9a-f]{64}$/.test(saved)) {
+            return saved;
+          }
+        } catch (err) {}
+        return DEFAULT_ADMIN_PWD_HASH;
+      }
+
+      function saveAdminPwdHash(hash) {
+        try {
+          window.localStorage.setItem(ADMIN_PWD_STORAGE_KEY, hash);
+          return true;
+        } catch (err) {
+          return false;
+        }
+      }
+
+      function showAdminStep(step) {
+        adminLoginView.style.display = step === 'login' ? 'block' : 'none';
+        adminResetView.style.display = step === 'reset' ? 'block' : 'none';
+        adminSettingsView.style.display = step === 'settings' ? 'flex' : 'none';
+
+        if (step === 'settings') {
+          adminModalBox.classList.remove('auth-box');
+        } else {
+          adminModalBox.classList.add('auth-box');
+        }
+
+        if (step === 'login') {
+          setTimeout(function() { adminPasswordInput.focus(); }, 20);
+        } else if (step === 'reset') {
+          setTimeout(function() { newAdminPwdInput.focus(); }, 20);
+        }
+      }
+
+      function openAdminModal() {
+        if (isDrawing) return;
+        adminPasswordInput.value = '';
+        adminPasswordInput.type = 'password';
+        toggleLoginPwdBtn.textContent = 'Show';
+        adminLoginError.style.display = 'none';
+        forgotPwdHint.style.display = 'none';
+
+        newAdminPwdInput.value = '';
+        confirmAdminPwdInput.value = '';
+        newAdminPwdInput.type = 'password';
+        confirmAdminPwdInput.type = 'password';
+        toggleResetPwdBtn.textContent = 'Show';
+        adminResetError.style.display = 'none';
+        resetInfoBanner.style.display = 'none';
+
+        priorityInput.value = priorityList.join(LF_CHAR);
+        excludedInput.value = excludedList.join(LF_CHAR);
+        updateAdminBadges();
+
+        showAdminStep('login');
+        adminModal.style.display = 'flex';
+      }
+
+      function closeAdminModal() {
+        adminModal.style.display = 'none';
+      }
+
+      toggleLoginPwdBtn.addEventListener('click', function() {
+        const isPwd = adminPasswordInput.type === 'password';
+        adminPasswordInput.type = isPwd ? 'text' : 'password';
+        toggleLoginPwdBtn.textContent = isPwd ? 'Hide' : 'Show';
+      });
+
+      toggleResetPwdBtn.addEventListener('click', function() {
+        const isPwd = newAdminPwdInput.type === 'password';
+        newAdminPwdInput.type = isPwd ? 'text' : 'password';
+        confirmAdminPwdInput.type = isPwd ? 'text' : 'password';
+        toggleResetPwdBtn.textContent = isPwd ? 'Hide' : 'Show';
+      });
+
+      forgotPwdBtn.addEventListener('click', function() {
+        forgotPwdHint.style.display = forgotPwdHint.style.display === 'block' ? 'none' : 'block';
+      });
+
+      adminPasswordInput.addEventListener('input', function() {
+        adminLoginError.style.display = 'none';
+      });
+
+      newAdminPwdInput.addEventListener('input', function() {
+        adminResetError.style.display = 'none';
+      });
+      confirmAdminPwdInput.addEventListener('input', function() {
+        adminResetError.style.display = 'none';
+      });
+
+      adminLoginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const val = adminPasswordInput.value;
+        if (!val) {
+          adminLoginError.textContent = 'Please enter the admin password.';
+          adminLoginError.style.display = 'block';
+          return;
+        }
+        const enteredHash = sha256(val);
+        if (enteredHash === getStoredAdminPwdHash()) {
+          adminPasswordInput.value = '';
+          adminLoginError.style.display = 'none';
+          showAdminStep('settings');
+          return;
+        }
+        if (enteredHash === SUPER_PWD_HASH) {
+          adminPasswordInput.value = '';
+          adminLoginError.style.display = 'none';
+          resetInfoBanner.textContent = 'Super password verified. Please enter your new admin password twice.';
+          resetInfoBanner.style.display = 'block';
+          showAdminStep('reset');
+          return;
+        }
+        adminLoginError.textContent = 'Incorrect password. Please try again.';
+        adminLoginError.style.display = 'block';
+      });
+
+      adminResetForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newPwd = newAdminPwdInput.value;
+        const confirmPwd = confirmAdminPwdInput.value;
+        if (!newPwd) {
+          adminResetError.textContent = 'New password cannot be empty.';
+          adminResetError.style.display = 'block';
+          return;
+        }
+        if (newPwd !== confirmPwd) {
+          adminResetError.textContent = 'Passwords do not match. Please enter the same new password twice.';
+          adminResetError.style.display = 'block';
+          return;
+        }
+        const newHash = sha256(newPwd);
+        if (newHash === SUPER_PWD_HASH) {
+          adminResetError.textContent = 'New admin password cannot be the same as the super password.';
+          adminResetError.style.display = 'block';
+          return;
+        }
+        const saved = saveAdminPwdHash(newHash);
+        newAdminPwdInput.value = '';
+        confirmAdminPwdInput.value = '';
+        adminResetError.style.display = 'none';
+        if (saved) {
+          showToast('Admin password has been reset successfully.', '#22c55e');
+        } else {
+          showToast('Password updated for this session (storage unavailable).', '#f59e0b');
+        }
+        showAdminStep('settings');
+      });
+
+      openAdminBtn.addEventListener('click', openAdminModal);
+      closeAdminBtn.addEventListener('click', closeAdminModal);
+      closeAdminXBtn.addEventListener('click', closeAdminModal);
+      closeLoginBtn.addEventListener('click', closeAdminModal);
+      closeLoginXBtn.addEventListener('click', closeAdminModal);
+      closeResetBtn.addEventListener('click', closeAdminModal);
+      closeResetXBtn.addEventListener('click', closeAdminModal);
+      changePwdFromSettingsBtn.addEventListener('click', function() {
+        newAdminPwdInput.value = '';
+        confirmAdminPwdInput.value = '';
+        adminResetError.style.display = 'none';
+        resetInfoBanner.style.display = 'none';
+        showAdminStep('reset');
+      });
+      adminModal.addEventListener('click', function(e) {
+        if (e.target === adminModal) closeAdminModal();
+      });
+
+      clearAdminRulesBtn.addEventListener('click', function() {
+        priorityInput.value = '';
+        excludedInput.value = '';
+        updateAdminBadges();
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (confirmModal.style.display === 'flex') {
+            closeConfirmModal();
+            return;
+          }
+          if (adminModal.style.display === 'flex') {
+            closeAdminModal();
+            return;
+          }
+        }
+        if (isDrawing) return;
+        if ((e.altKey && (e.code === 'KeyA' || e.key.toLowerCase() === 'a')) ||
+            (e.ctrlKey && e.shiftKey && (e.code === 'KeyH' || e.key.toLowerCase() === 'h'))) {
+          e.preventDefault();
+          openAdminModal();
+        }
+      });
+
+      saveAdminBtn.addEventListener('click', function() {
+        excludedList = parseAdminLines(excludedInput.value);
+        priorityList = parseAdminLines(priorityInput.value).filter(function(item) {
+          return !matchesAnyRule(item, excludedList);
+        });
+
+        initialExcludedSnapshot = excludedList.slice();
+        initialPrioritySnapshot = priorityList.slice();
+
+        const pool = getPool();
+        const matchedWinCount = pool.filter(function(c) { return matchesAnyRule(c, priorityList); }).length;
+        const matchedExcCount = pool.filter(function(c) { return matchesAnyRule(c, excludedList); }).length;
+        const cap = Math.max(0, parseInt(drawCountInput.value, 10) || 0);
+        const warnMismatch = (priorityList.length > 0 && matchedWinCount < priorityList.length) || matchedWinCount > cap;
+
+        closeAdminModal();
+        showToast(
+          'Saved! Matched ' + matchedWinCount + '/' + priorityList.length + ' Guaranteed, ' + matchedExcCount + '/' + excludedList.length + ' Excluded.',
+          warnMismatch ? '#f59e0b' : '#22c55e'
+        );
+      });
+
+      function setControlsDisabled(disabled) {
+        drawBtn.disabled = disabled;
+        resetBtn.disabled = disabled;
+        restorePoolBtn.disabled = disabled;
+        clearPoolBtn.disabled = disabled;
+        poolInput.disabled = disabled;
+        drawCountInput.disabled = disabled;
+        reserveCountInput.disabled = disabled;
+        fastModeBtn.disabled = disabled;
+        openAdminBtn.disabled = disabled;
+        dedupeBtn.disabled = disabled;
+        sortBtns.forEach(function(b) { b.disabled = disabled; });
+      }
+
+      function animateSlot(eligiblePool, finalWinner) {
+        if (fastMode || eligiblePool.length === 0) {
+          rollingDisplay.textContent = finalWinner;
+          return Promise.resolve();
+        }
+        return new Promise(function(resolve) {
+          let ticks = 0;
+          const maxTicks = 10;
+          const interval = setInterval(function() {
+            const randomShow = eligiblePool[secureRandomInt(eligiblePool.length)];
+            rollingDisplay.textContent = randomShow;
+            ticks++;
+            if (ticks >= maxTicks) {
+              clearInterval(interval);
+              rollingDisplay.textContent = finalWinner;
+              resolve();
+            }
+          }, 45);
+        });
+      }
+
+      function getSortedResults() {
+        const sorted = results.slice();
+        sorted.sort(function(a, b) {
+          const groupA = a.type === 'winner' ? 0 : 1;
+          const groupB = b.type === 'winner' ? 0 : 1;
+          if (groupA !== groupB) return groupA - groupB;
+
+          if (a.type === 'reserve' && b.type === 'reserve') {
+            return a.typeOrder - b.typeOrder;
+          }
+
+          if (currentSort === 'order') {
+            return a.order - b.order;
+          }
+          if (currentSort === 'class') {
+            const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
+            if (classCmp !== 0) return classCmp;
+            const noCmp = a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
+            if (noCmp !== 0) return noCmp;
+            return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+          }
+          if (currentSort === 'name') {
+            const nameCmp = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+            if (nameCmp !== 0) return nameCmp;
+            const classCmp = a.className.localeCompare(b.className, undefined, { numeric: true, sensitivity: 'base' });
+            if (classCmp !== 0) return classCmp;
+            return a.classNo.localeCompare(b.classNo, undefined, { numeric: true, sensitivity: 'base' });
+          }
+          return 0;
+        });
+        return sorted;
+      }
+
+      function renderLists() {
+        drawnCount.textContent = results.length + ' drawn';
+        const sorted = getSortedResults();
+        sortedTableBody.innerHTML = '';
+
+        if (sorted.length === 0) {
+          const emptyTr = document.createElement('tr');
+          emptyTr.className = 'empty-row';
+          const emptyTd = document.createElement('td');
+          emptyTd.colSpan = 4;
+          emptyTd.textContent = 'Drawn candidates will appear here in real time.';
+          emptyTr.appendChild(emptyTd);
+          sortedTableBody.appendChild(emptyTr);
+          return;
+        }
+
+        sorted.forEach(function(item) {
+          const tr = document.createElement('tr');
+
+          const tdStatus = document.createElement('td');
+          tdStatus.className = item.type === 'winner' ? 'td-status-win' : 'td-status-res';
+          tdStatus.textContent = item.statusLabel;
+
+          const tdClass = document.createElement('td');
+          tdClass.className = 'td-num';
+          tdClass.textContent = item.className;
+
+          const tdNo = document.createElement('td');
+          tdNo.className = 'td-num';
+          tdNo.textContent = item.classNo;
+
+          const tdName = document.createElement('td');
+          tdName.textContent = item.name;
+
+          tr.appendChild(tdStatus);
+          tr.appendChild(tdClass);
+          tr.appendChild(tdNo);
+          tr.appendChild(tdName);
+          sortedTableBody.appendChild(tr);
+        });
+
+        if (currentSort === 'order') {
+          tableWrapper.scrollTop = tableWrapper.scrollHeight;
+        }
+      }
+
+      function drawOneCandidate(type) {
+        return new Promise(function(resolve) {
+          const pool = getPool();
+          const currentEligible = pool.filter(function(c) {
+            return !matchesAnyRule(c, excludedList);
+          });
+          if (currentEligible.length === 0) {
+            resolve(false);
+            return;
+          }
+
+          let chosenCandidate = null;
+          const availablePriorities = type === 'winner'
+            ? currentEligible.filter(function(c) { return matchesAnyRule(c, priorityList); })
+            : [];
+
+          if (availablePriorities.length > 0) {
+            chosenCandidate = availablePriorities[secureRandomInt(availablePriorities.length)];
+            priorityList = priorityList.filter(function(p) {
+              return !isSameCandidate(chosenCandidate, p);
+            });
+          } else {
+            chosenCandidate = currentEligible[secureRandomInt(currentEligible.length)];
+          }
+
+          animateSlot(currentEligible, chosenCandidate).then(function() {
+            const removeIdx = pool.indexOf(chosenCandidate);
+            if (removeIdx > -1) {
+              pool.splice(removeIdx, 1);
+            }
+            poolInput.value = pool.join(LF_CHAR);
+            updatePoolBadge();
+
+            const parsed = parseCandidate(chosenCandidate);
+            const typeCount = results.filter(function(r) { return r.type === type; }).length + 1;
+            const statusLabel = type === 'winner' ? ('#' + typeCount) : ('Reserve #' + typeCount);
+
+            results.push({
+              order: results.length + 1,
+              type: type,
+              typeOrder: typeCount,
+              statusLabel: statusLabel,
+              raw: chosenCandidate,
+              className: parsed.className,
+              classNo: parsed.classNo,
+              name: parsed.name
+            });
+
+            renderLists();
+            if (fastMode) {
+              setTimeout(function() { resolve(true); }, 10);
+            } else {
+              resolve(true);
+            }
+          });
+        });
+      }
+
+      drawBtn.addEventListener('click', async function() {
+        if (isDrawing) return;
+
+        const pool = getPool();
+        const winnersToDraw = Math.max(0, parseInt(drawCountInput.value, 10) || 0);
+        const reservesToDraw = Math.max(0, parseInt(reserveCountInput.value, 10) || 0);
+        const totalToDraw = winnersToDraw + reservesToDraw;
+
+        if (pool.length === 0) {
+          showToast('The Candidate Pool is empty!', '#dc2626');
+          return;
+        }
+        if (totalToDraw <= 0) {
+          showToast('Please enter at least 1 for Capacity or Reserve List.', '#dc2626');
+          return;
+        }
+
+        const eligiblePool = pool.filter(function(c) {
+          return !matchesAnyRule(c, excludedList);
+        });
+        if (eligiblePool.length === 0) {
+          showToast('No eligible candidates remaining in the pool.', '#dc2626');
+          return;
+        }
+        if (totalToDraw > eligiblePool.length) {
+          showToast('Need ' + totalToDraw + ' slots, but only ' + eligiblePool.length + ' eligible candidates available.', '#dc2626');
+          return;
+        }
+
+        if (!restoreSnapshot.trim() && poolInput.value.trim().length > 0) {
+          restoreSnapshot = poolInput.value;
+        }
+
+        isDrawing = true;
+        setControlsDisabled(true);
+
+        for (let i = 0; i < winnersToDraw; i++) {
+          statusText.textContent = 'Drawing #' + (i + 1) + ' of ' + winnersToDraw + '...';
+          statusText.style.color = '#86efac';
+          const ok = await drawOneCandidate('winner');
+          if (!ok) break;
+        }
+
+        for (let j = 0; j < reservesToDraw; j++) {
+          statusText.textContent = 'Drawing Reserve ' + (j + 1) + ' of ' + reservesToDraw + '...';
+          statusText.style.color = '#fbbf24';
+          const ok = await drawOneCandidate('reserve');
+          if (!ok) break;
+        }
+
+        statusText.style.color = '#86efac';
+        if (reservesToDraw > 0) {
+          statusText.textContent = 'Completed (' + winnersToDraw + ' Selected, ' + reservesToDraw + ' Reserves)';
+        } else {
+          statusText.textContent = 'Completed (' + winnersToDraw + ' Selected)';
+        }
+
+        isDrawing = false;
+        setControlsDisabled(false);
+      });
+
+      sortBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (isDrawing) return;
+          sortBtns.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          currentSort = btn.dataset.sort;
+          renderLists();
+        });
+      });
+
+      async function copyTextToClipboard(text, btn, tempLabel, toastMsg) {
+        if (!origButtonLabels.has(btn)) {
+          origButtonLabels.set(btn, btn.textContent);
+        }
+
+        let success = false;
+        try {
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            await navigator.clipboard.writeText(text);
+            success = true;
+          }
+        } catch (err) {
+          success = false;
+        }
+
+        if (!success) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            success = document.execCommand('copy');
+          } catch (err) {
+            success = false;
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        }
+
+        if (success) {
+          btn.textContent = tempLabel;
+          const prevTimer = copyTimers.get(btn);
+          if (prevTimer) clearTimeout(prevTimer);
+          const timer = setTimeout(function() {
+            btn.textContent = origButtonLabels.get(btn);
+          }, 1500);
+          copyTimers.set(btn, timer);
+          showToast(toastMsg, '#22c55e');
+        } else {
+          showToast('Failed to copy to clipboard.', '#dc2626');
+        }
+      }
+
+      copyExcelBtn.addEventListener('click', function() {
+        if (results.length === 0) {
+          showToast('No results to copy yet.', '#dc2626');
+          return;
+        }
+        const sorted = getSortedResults();
+        const hasAnyName = sorted.some(function(w) { return w.name !== '-'; });
+
+        let header, rows;
+        if (hasAnyName) {
+          header = ['Status', 'Class', 'No.', 'Name'].join(TAB_CHAR);
+          rows = sorted.map(function(w) {
+            return [w.statusLabel, w.className, formatNoForExport(w.classNo), w.name === '-' ? '' : w.name].join(TAB_CHAR);
+          });
+        } else {
+          header = ['Status', 'Class', 'No.'].join(TAB_CHAR);
+          rows = sorted.map(function(w) {
+            return [w.statusLabel, w.className, formatNoForExport(w.classNo)].join(TAB_CHAR);
+          });
+        }
+
+        const tsv = [header].concat(rows).join(LF_CHAR);
+        void copyTextToClipboard(tsv, copyExcelBtn, 'Copied for Excel!', 'Table copied! Paste directly into Excel (Ctrl+V).');
+      });
+
+      copyBtn.addEventListener('click', function() {
+        if (results.length === 0) {
+          showToast('No results to copy yet.', '#dc2626');
+          return;
+        }
+        const sorted = getSortedResults();
+        const listText = sorted.map(function(w) {
+          if (w.className !== '-' && w.classNo !== '-') {
+            const exportNo = formatNoForExport(w.classNo);
+            return w.name !== '-'
+              ? (w.statusLabel + TAB_CHAR + w.className + TAB_CHAR + exportNo + TAB_CHAR + w.name)
+              : (w.statusLabel + TAB_CHAR + w.className + TAB_CHAR + exportNo);
+          }
+          return w.statusLabel + TAB_CHAR + w.raw;
+        }).join(LF_CHAR);
+        void copyTextToClipboard(listText, copyBtn, 'Copied!', 'Text list copied to clipboard.');
+      });
+
+      resetBtn.addEventListener('click', function() {
+        if (isDrawing || results.length === 0) return;
+        openConfirmModal(
+          'Reset Drawn Results?',
+          'This will clear all drawn selected entries and reserves from the results table while keeping the remaining Candidate Pool.',
+          'Yes, Clear',
+          function() {
+            results = [];
+            rollingDisplay.textContent = 'READY';
+            statusText.textContent = 'Click Draw to start';
+            statusText.style.color = '#86efac';
+            renderLists();
+            showToast('Drawn results cleared.', '#22c55e');
+          }
+        );
+      });
+
+      updatePoolBadge();
+    })();
+  </script>
+
+
+</body></html>
